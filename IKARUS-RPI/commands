@@ -2,6 +2,7 @@ sudo pip3 install paho-mqtt
 sudo pip3 install adafruit-blinka
 sudo pip3 install adafruit-circuitpython-mpu6050
 sudo pip3 install adafruit-circuitpython-bmp280
+sudo pip3 install adafruit-circuitpython-bme280
 git clone https://github.com/adafruit/Adafruit_Python_BMP.git
 cd Adafruit_Python_BMP
 sudo python3 setup.py

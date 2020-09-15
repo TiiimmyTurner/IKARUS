@@ -1,6 +1,3 @@
-setInterval(update, 500);
-
-
 const fs = require('fs');
 
 function update(){
