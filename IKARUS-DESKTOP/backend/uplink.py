@@ -4,12 +4,12 @@ def send(message):
     sys.stdout.flush()
 
 while True:
-    temp = open("temp/commands.txt", "r")
+    temp = open("temporary/commands.txt", "r")
     cmd = temp.read()
     if cmd != "":
         send(cmd)
         temp.close()
-        temp = open("temp/commands.txt", "w")
+        temp = open("temporary/commands.txt", "w")
     
     temp.close()
     time.sleep(.1)
