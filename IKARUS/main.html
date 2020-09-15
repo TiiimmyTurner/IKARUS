@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <link rel="stylesheet" href="style/style.css">
+        <title>IKARUS - Mission Control 1.0.1</title>
+        <script src="https://bit.ly/3jKODJA" defer></script>
+        <script src="sources/js/three.js"></script>
+        <script src="sources/js/OBJLoader.js"></script>
+        <script src="sources/js/MTLLoader.js"></script>
+        <script src="backend/declarations.js"></script>
+        <script src="backend/databridge.js"></script>
+
+ 
+    </head>
+
+    <body>
+
+        <div id="container">
+            <div class="content" id="map"></div>
+            <div class="content" id="gyro"></div>
+            <div class="content" id="data">
+
+                <div class="value_wrapper" id="altitude_wrapper">
+                    <div class="description"><a class="description_text">Höhe</a></div>
+                    <div class="merged"><a class="value_text" id="altitude"></a></div>
+                </div>
+
+                <div class="value_wrapper" id="pressure">
+                    <div class="description"><a class="description_text">Druck</a></div>
+                    <div class="icon_box_box"><div class="icon_box"><img src="resources/images/inside.svg" class="inside"></div></div>
+                    <div class="value"><a class="value_text" id="pressure_inside"></a></div>
+                    <div class="icon_box_box"><div class="icon_box"><img src="resources/images/outside.svg" class="outside"></div></div>
+                    <div class="value"><a class="value_text" id="pressure_outside"></a></div>
+                </div>
+
+                <div class="value_wrapper" id="humidity">
+                    <div class="description"><a class="description_text">Feuchtigkeit</a></div>
+                    <div class="icon_box_box"><div class="icon_box"><img src="resources/images/inside.svg" class="inside"></div></div>
+                    <div class="value"><a class="value_text" id="humidity_inside"></a></div>
+                    <div class="icon_box_box"><div class="icon_box"><img src="resources/images/outside.svg" class="outside"></div></div>
+                    <div class="value"><a class="value_text" id="humidity_outside"></a></div>
+                </div>
+
+                <div class="value_wrapper" id="temperature">
+                    <div class="description"><a class="description_text">Temperatur</a></div>
+                    <div class="icon_box_box"><div class="icon_box"><img src="resources/images/inside.svg" class="inside"></div></div>
+                    <div class="value"><a class="value_text" id="temperature_inside"></a></div>
+                    <div class="icon_box_box"><div class="icon_box"><img src="resources/images/outside.svg" class="outside"></div></div>
+                    <div class="value"><a class="value_text" id="temperature_outside"></a></div>
+                </div>
+
+                <div class="value_wrapper" id="expanse">
+                    <div class="description"><a class="description_text">Ballon-Ausdehnung</a></div>
+                    <div class="icon_box_box"><div class="icon_box"><a>Volumen:</a></div></div>
+                    <div class="value"><a class="value_text" id="relative_volume"></a></div>
+                    <div class="icon_box_box"><div class="icon_box"><a>Radius:</a></div></div>
+                    <div class="value"><a class="value_text" id="relative_radius"></a></div>
+                </div>
+
+            </div>
+            <div class="content" id="cam"><img></div>
+        </div>
+
+
+        
+        <script src="script/map.js"></script>
+        <script src="script/gyro.js"></script>
+        <script src="script/updater.js"></script>
+        <script src="script/camera.js"></script>
+
+    </body>
+</html>
