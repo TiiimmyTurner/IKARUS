@@ -94,13 +94,13 @@ while True:
         dataset["pressure_inside"] = bmp180.read_pressure() / 100
         dataset["temperature_inside"] = bmp180.read_temperature()
         dataset["time"] = time.time()
-
-        package.append(dataset)
+        publish.single(MQTT_PATH, json.dumps(dataset), hostname=MQTT_SERVER)
+        """package.append(dataset)
 
         if time.time() - sended >= updateRate:
             sended = time.time()
             publish.single(MQTT_PATH, json.dumps(package), hostname=MQTT_SERVER)
-            package = []
+            package = []"""
 
 
     

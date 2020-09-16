@@ -16,8 +16,9 @@ def on_connect(_client, userdata, flags, rc):
 def on_message(client, userdata, msg):
 
     #receive
-    data = json.loads(str(msg.payload)[2:(len(str(msg.payload))-1)])
-    for i in range(len(data)):
+    data = str(msg.payload) #[2:(len(str(msg.payload))-1)]
+    print(data)
+"""    for i in range(len(data)):
         #log
         now = datetime.now()
         timestamp = now.strftime("[%d/%m/%Y %H:%M:%S]")
@@ -30,7 +31,7 @@ def on_message(client, userdata, msg):
         print(data)
         sys.stdout.flush()
         if i < len(data) - 1:
-            time.sleep(data[i + 1]["time"] - data[i]["time"])
+            time.sleep(data[i + 1]["time"] - data[i]["time"])"""
 
 client = mqtt.Client()
 client.on_connect = on_connect

@@ -17,8 +17,9 @@ new Promise((resolve)=>{
 var downlink = spawn(python, ['backend/downlink.py']);
 
 downlink.stdout.on('data', (data) => {
-    dataset = JSON.parse(data.toString())
-    update();
+    //dataset = JSON.parse(data.toString())
+    console.log(data.toString())
+    //update();
 });
     
 downlink.on("exit", function(code, signal){
