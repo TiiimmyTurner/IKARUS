@@ -1,5 +1,10 @@
 const fs = require('fs');
+function loop(){
+    
+}
+function read(){
 
+}
 function update(){
     if (dataset["time"] == 0){return}
     const display = ["humidity_inside", "humidity_outside", "pressure_inside", "pressure_outside", "temperature_inside", "temperature_outside"];
@@ -84,7 +89,7 @@ function update(){
 
     //Commands for uplink
     
-    fs.appendFile('temp/commands.txt', commands, (err) => {if (err) throw err;})
+    fs.appendFile('temporary/commands.txt', commands, (err) => {if (err) throw err;})
     commands = '';
     
 

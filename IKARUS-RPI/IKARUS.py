@@ -45,7 +45,7 @@ dataset = {
 angle = [0, 0]
 gyro_sensitivity = 1
 accel_sensitivity = 1
-updateRate = 1
+updateRate = 4
 
 
 
@@ -66,7 +66,7 @@ def filter(gyr, acc, dt):
     #compensate drift if data =! bullshit (ToDo)
     if inRange:
         accelData[0] = math.atan2(acc[1], acc[2])
-        accelData[1] = math.atan2(acc[0], math.sqrt(acc[2]**2 + acc[1]**2))
+        accelData[1] = -math.atan2(acc[0], math.sqrt(acc[2]**2 + acc[1]**2))
         for x in range(2):
             angle[x] = 0.95 * gyrData[x] + 0.05 * accelData[x]
     
@@ -85,7 +85,7 @@ while True:
     if i == 9:
         i = 0
 
-        dataset["rotation_x"] = angle[0]
+        dataset["rotation_x"] = -angle[0]
         dataset["rotation_y"] = angle[1]
         dataset["rotation_z"] = mpu6050.gyro[2]
         dataset["humidity_outside"] = bmp280.humidity
@@ -94,16 +94,16 @@ while True:
         dataset["pressure_inside"] = bmp180.read_pressure() / 100
         dataset["temperature_inside"] = bmp180.read_temperature()
         dataset["time"] = time.time()
-        publish.single(MQTT_PATH, json.dumps(dataset), hostname=MQTT_SERVER)
-        """package.append(dataset)
+        #publish.single(MQTT_PATH, json.dumps(dataset), hostname=MQTT_SERVER)
+        package.append(dataset)
 
         if time.time() - sended >= updateRate:
             sended = time.time()
             publish.single(MQTT_PATH, json.dumps(package), hostname=MQTT_SERVER)
-            package = []"""
+            package = []
 
 
     
-    time.sleep(0.02)
+    #time.sleep(0.01)
     end = time.time()
     i += 1
