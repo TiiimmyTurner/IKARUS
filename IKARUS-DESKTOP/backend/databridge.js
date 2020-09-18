@@ -21,7 +21,10 @@ downlink.stdout.on('data', (data) => {
     for (var x of package){
         buffer.push(x);
     }
-    read();
+    if(!running){
+        running = true;
+        read_buffer();
+    }
 });
     
 downlink.on("exit", function(code, signal){

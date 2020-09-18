@@ -1,10 +1,9 @@
-import sys, board, busio, time, json
+import sys, board, busio, time, json, math, copy
 import paho.mqtt.client as mqtt
 import RPi.GPIO as GPIO
 import adafruit_mpu6050, adafruit_bme280
 import Adafruit_BMP.BMP085 as BMP085
 import paho.mqtt.publish as publish
-import math
 
 #setup
 
@@ -45,7 +44,7 @@ dataset = {
 angle = [0, 0]
 gyro_sensitivity = 1
 accel_sensitivity = 1
-updateRate = 4
+updateRate = 0
 
 
 
@@ -95,7 +94,7 @@ while True:
         dataset["temperature_inside"] = bmp180.read_temperature()
         dataset["time"] = time.time()
         #publish.single(MQTT_PATH, json.dumps(dataset), hostname=MQTT_SERVER)
-        package.append(dataset)
+        package.append(copy.deepcopy(dataset))
 
         if time.time() - sended >= updateRate:
             sended = time.time()

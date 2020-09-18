@@ -2,6 +2,11 @@ body {
     margin: 0;
 }
 
+
+
+
+/*fonts, text*/
+
 @font-face {
     font-family: whitney;
     src: url(../resources/fonts/whitneybook.otf);
@@ -27,8 +32,12 @@ body {
     font-weight: bold;
 }
 
+
+
+
 /* big containers */
-#container {
+
+#container { /*wraps everything*/
     background-color: #363940; /* discord hell: #363940, discord dunkel: #303136, electron: #2B2E3B */
     position: absolute;
     height: 100%;
@@ -39,28 +48,45 @@ body {
     flex-wrap: wrap;
 }
 .content {
-    height: 40%;
-    width: 40%;
     display: flex;
     justify-content: space-between;
     align-content: space-between;
     flex-wrap: wrap;
 }
 
+#cam, #map {
+    height: 40%;
+    width: 40%;
+}
+
+#data, #gyro, #time {
+    height: 40%;
+    width: 30%;   
+}
+
+#time {
+    background-color: #303136;
+}
 
 #gyro > *, #cam > img, .content:not(#cam):not(#data) {
     border-radius: 8px;
 }
 
 
+
+
 /* center cam */
+
 #cam{
     justify-content: center;
     align-content: center;
 }
 
 
+
+
 /* datalist */
+
 .value_wrapper {
     width: 100%;
     height: 17%;
@@ -89,6 +115,7 @@ body {
     justify-content: center;
     align-items: center;
 }
+
 
 
 

@@ -2,7 +2,7 @@ var map;
 var marker;
 var isMapLoaded = false;
 var commands = "Dew it!";
-
+var lastUpdate = 0;
 var dataset = {
 
     "temperature_inside" : 0,
@@ -18,7 +18,6 @@ var dataset = {
     "gps_y": 11,
     "time": 0
 
-    };
-
+    }
 var buffer = [];
-   
+var running = false;   
