@@ -44,7 +44,10 @@ dataset = {
 angle = [0, 0]
 gyro_sensitivity = 1
 accel_sensitivity = 1
-updateRate = 0
+
+minPackageDelay = 0
+minMeasureDelay = 0
+minPackageSize = 0
 
 
 
@@ -73,16 +76,15 @@ def filter(gyr, acc, dt):
         for x in range(2):
             angle[x] = gyrData[x]
 
-i = 0
 start = 0
 end = 0
-sended = time.time()
+measure, sended = time.time()
 while True:
     filter(mpu6050.gyro, mpu6050.acceleration, end - start)
     start = time.time()
 
-    if i == 9:
-        i = 0
+    if time.time() - measure >= minMeasureDelay:
+        measure = time.time()
 
         dataset["rotation_x"] = -angle[0]
         dataset["rotation_y"] = angle[1]
@@ -93,16 +95,12 @@ while True:
         dataset["pressure_inside"] = bmp180.read_pressure() / 100
         dataset["temperature_inside"] = bmp180.read_temperature()
         dataset["time"] = time.time()
-        #publish.single(MQTT_PATH, json.dumps(dataset), hostname=MQTT_SERVER)
         package.append(copy.deepcopy(dataset))
 
-        if time.time() - sended >= updateRate:
+        if time.time() - sended >= minPackageDelay and len(package) >= minPackageSize:
             sended = time.time()
             publish.single(MQTT_PATH, json.dumps(package), hostname=MQTT_SERVER)
             package = []
 
 
-    
-    #time.sleep(0.01)
     end = time.time()
-    i += 1
