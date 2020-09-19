@@ -24,15 +24,39 @@ function read_buffer(){
         read_buffer();
     }, wait)
 }
+
+//responsive font-size
+
 setInterval(() => {
     document.querySelectorAll("#data a").forEach((element) => {
-        if (window.innerWidth <= 1550){
-            element.setAttribute("style", "font-size: " + (15 - Math.floor((1550 - window.innerWidth) / 100)).toString() + "px;");
-        }
-        else{
-            element.setAttribute("style", "font-size: 16px;");
-        }
+
+        element.setAttribute("style", "font-size: " +
+
+        Math.min(
+            (() => {
+                if (window.innerWidth <= 1550){
+                    return 15 - Math.floor((1550 - window.innerWidth) / 100);
+                }
+
+                else{
+                    return 16;
+                }
+            })(),
+
+            (() => {
+                if (document.querySelector("#data > div").offsetHeight <= 35){
+                    return 15 - Math.floor((35 - document.querySelector("#data > div").offsetHeight) / 5)
+                }
+                else{
+                    return 16;
+                }
+            })()
+        ).toString()
+
+        + "px;");
+
     });
+    document.getElementById("time").innerHTML = document.querySelector("#data > div").offsetHeight;
 }, 10);
 
 function update(){
