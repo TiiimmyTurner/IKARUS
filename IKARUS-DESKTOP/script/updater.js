@@ -1,4 +1,3 @@
-const { timeStamp } = require('console');
 const fs = require('fs');
 
 function read_buffer(){
@@ -25,7 +24,16 @@ function read_buffer(){
         read_buffer();
     }, wait)
 }
-
+setInterval(() => {
+    document.querySelectorAll("#data a").forEach((element) => {
+        if (window.innerWidth <= 1550){
+            element.setAttribute("style", "font-size: " + (15 - Math.floor((1550 - window.innerWidth) / 100)).toString() + "px;");
+        }
+        else{
+            element.setAttribute("style", "font-size: 16px;");
+        }
+    });
+}, 10);
 
 function update(){
     //if (dataset["time"] == 0){return}

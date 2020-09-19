@@ -46,7 +46,7 @@ gyro_sensitivity = 1
 accel_sensitivity = 1
 
 minPackageDelay = 0
-minMeasureDelay = 0
+minMeasureDelay = 0.01
 minPackageSize = 0
 
 
@@ -78,7 +78,8 @@ def filter(gyr, acc, dt):
 
 start = 0
 end = 0
-measure, sended = time.time()
+measure = time.time()
+sended = time.time()
 while True:
     filter(mpu6050.gyro, mpu6050.acceleration, end - start)
     start = time.time()

@@ -23,6 +23,9 @@ body {
 }
 
 
+#expanse .description_text {
+    text-align: center;
+}
 .value_text, .icon_box a, .description_text{
     font-family: whitney;
     color: white;
@@ -32,8 +35,8 @@ body {
     font-weight: bold;
 }
 
-
-
+@media only screen and (max-width: 1550px) {
+}
 
 /* big containers */
 
@@ -42,7 +45,7 @@ body {
     position: absolute;
     height: 100%;
     width: 100%;
-    display:flex;
+    display: flex;
     justify-content: space-around;
     align-content: space-around;
     flex-wrap: wrap;

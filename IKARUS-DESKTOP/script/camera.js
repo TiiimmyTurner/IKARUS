@@ -18,4 +18,4 @@ function updateFrame(){
         cam.setAttribute("width", h / ratio);
     }
 }
-setInterval(()=>{updateFrame();}, 100);
+setInterval(()=>{updateFrame();}, 10);
