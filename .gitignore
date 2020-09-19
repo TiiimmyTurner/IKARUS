@@ -1,5 +1,5 @@
 node_modules
 !temp
 !videostream
-logs/*
+IKARUS-DESKTOP/logs/*
 !logs/.gitkeep
