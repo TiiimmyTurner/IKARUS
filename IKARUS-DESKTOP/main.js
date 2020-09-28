@@ -10,7 +10,7 @@ function createWindow () {
   const win = new BrowserWindow({
     icon: image,
     //to Do: better header bar
-    //frame: false
+    frame: false,
     webPreferences: {
       nodeIntegration: true
     }
