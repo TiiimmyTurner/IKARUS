@@ -180,7 +180,6 @@ body {
     justify-content: flex-end;
     width: 30%;
     justify-content: flex-end;
-    -webkit-app-region: no-drag;
 }
 
 #control > * {
@@ -189,6 +188,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    -webkit-app-region: no-drag;
 }
 
 #control > *:hover{
