@@ -1,0 +1,30 @@
+@font-face {
+    font-family: whitney;
+    src: url(../resources/fonts/whitneybook.otf);
+    font-weight: lighter;
+}
+@font-face {
+    font-family: whitney;
+    src: url(../resources/fonts/whitneybold.otf);
+    font-weight: bold;
+}
+@font-face {
+    font-family: whitney;
+    src: url(../resources/fonts/whitneymedium.otf);
+}
+@font-face {
+    font-family: transformers;
+    src: url(../resources/fonts/transformers.ttf);
+}
+
+#expanse .description_text {
+    text-align: center;
+}
+.value_text, .icon_box a, .description_text{
+    font-family: whitney;
+    color: white;
+}
+
+.description_text{
+    font-weight: bold;
+}
