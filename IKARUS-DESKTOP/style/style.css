@@ -62,9 +62,8 @@ body {
 }
 .content {
     display: flex;
-    justify-content: space-between;
-    align-content: space-between;
-    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
 }
 
 #cam, #map {
@@ -81,84 +80,11 @@ body {
     background-color: #303136;
 }
 
-#gyro > *, #cam > img, .content:not(#cam):not(#data) {
+.content > * {
     border-radius: 8px;
 }
 
 
-
-
-/* center cam */
-
-#cam{
-    justify-content: center;
-    align-content: center;
-}
-
-
-
-
-/* datalist */
-
-.value_wrapper {
-    width: 100%;
-    height: 17%;
-    display: flex;
-    align-content: space-between;
-    justify-content: space-between;
-    background-color: #303136;
-    border-radius: 8px;
-}
-.description {
-    width: 20%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-}
-.merged{
-    width: 80%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.value {
-    width: 20%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-
-
-
-/* inside/outside icons */
-
-.icon_box{
-    display:flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    width: 50%;
-    
-}
-
-.icon_box_box{
-    width:20%;
-    height:100%;
-    display:flex;
-    align-items: center;
-    justify-content: flex-end;
-}
-.inside{
-    height:30%;
-    width: 100%;
-}
-
-.outside{
-    height:25.5%;
-    width: 100%;
-}
 
 
 
@@ -280,3 +206,133 @@ body {
     color: #bfbfbf;
     font-size: 12px;
 }
+
+
+
+
+/* map */
+#map > * {
+    height: 100%;
+    width: 100%;
+}
+
+
+
+
+
+
+/* data */
+#value_side {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.value_wrapper, #values ~ * > *{
+    width: 100%;
+    height: 17%;
+    background-color: #303136;
+    border-radius: 8px;
+    display: flex;
+    align-content: space-between;
+    justify-content: space-between;
+    
+    /*box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);*/
+}
+
+
+.description {
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid #bfbfbf;
+
+}
+.merged{
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+.value {
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+
+/* flip-stuff */
+#diagram {
+    background-color: #303136;
+    transform: rotateY(180deg);
+    cursor: pointer;
+}
+#data {
+    perspective: 10000px;
+}
+#value_side, #diagram {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transition: transform 1s;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform-style: peserve-3d;
+}
+
+#values, #values ~ * {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-content: space-between;
+    flex-wrap: wrap;
+
+}
+
+#values ~ * {
+    z-index: -1;
+}
+
+#values ~ * > *{
+    transition: border-radius 0.4s, height 0.2s;
+}
+
+
+
+/* inside/outside icons */
+
+.icon_box{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 50%;
+    
+}
+
+.icon_box_box{
+    width:20%;
+    height:100%;
+    display:flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+.inside{
+    height:30%;
+    width: 100%;
+}
+
+.outside{
+    height:25.5%;
+    width: 100%;
+}
+
+
+
+

@@ -28,7 +28,7 @@ function read_buffer(){
 //responsive font-size
 
 setInterval(() => {
-    document.querySelectorAll("#data a").forEach((element) => {
+    document.querySelectorAll("#values a").forEach((element) => {
 
         
 
@@ -52,8 +52,8 @@ setInterval(() => {
             })(),
 
             (() => {
-                if (document.querySelector("#data > div").offsetHeight <= 35){
-                    return 15 - Math.floor((35 - document.querySelector("#data > div").offsetHeight) / 5)
+                if (document.querySelector("#values > div").offsetHeight <= 35){
+                    return 15 - Math.floor((35 - document.querySelector("#values > div").offsetHeight) / 5)
                 }
                 else{
                     return 16;

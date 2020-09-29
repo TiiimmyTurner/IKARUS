@@ -13,7 +13,7 @@ function initMap() {
         }
 
         map = new google.maps.Map(
-            document.getElementById("map"),
+            document.querySelector("#map > *"),
             options
         );
 

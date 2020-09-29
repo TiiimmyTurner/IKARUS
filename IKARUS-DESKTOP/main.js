@@ -9,7 +9,8 @@ function createWindow () {
   // Erstelle das Browser-Fenster.
   const win = new BrowserWindow({
     icon: image,
-    //to Do: better header bar
+    minWidth: 500,
+    minHeight: 500,
     frame: false,
     webPreferences: {
       nodeIntegration: true,
