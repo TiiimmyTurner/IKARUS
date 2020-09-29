@@ -20,4 +20,5 @@ var dataset = {
 
     }
 var buffer = [];
-var running = false;   
+var running = false;
+var win = require('electron').remote.BrowserWindow.getFocusedWindow();

@@ -12,13 +12,14 @@ function createWindow () {
     //to Do: better header bar
     frame: false,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      enableRemoteModule: true
     }
 
-  })
-  win.webContents.openDevTools()
-  win.loadFile('main.html')
-  win.maximize()
+  });
+  win.webContents.openDevTools();
+  win.loadFile('main.html');
+  win.maximize();
   
 
 }

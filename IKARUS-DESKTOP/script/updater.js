@@ -30,8 +30,16 @@ function read_buffer(){
 setInterval(() => {
     document.querySelectorAll("#data a").forEach((element) => {
 
-        element.setAttribute("style", "font-size: " +
+        
 
+        /*
+        if (element.clientWidth > element.parentElement.clientWidth - 6 || element.clientHeight > element.parentElement.clientHeight - 4){
+            element.setAttribute("style", "font-size: " + (element.style.fontSize - 1).toString() + "px");
+        }
+        
+
+        */
+        element.setAttribute("style", "font-size: " +
         Math.min(
             (() => {
                 if (window.innerWidth <= 1550){
@@ -52,11 +60,12 @@ setInterval(() => {
                 }
             })()
         ).toString()
+        
 
         + "px;");
 
     });
-    document.getElementById("time").innerHTML = document.querySelector("#data > div").offsetHeight;
+    document.getElementById("time").innerHTML = document.querySelector("#pressure .description_text").style.fontSize + " " + document.querySelector(".description").clientWidth;
 }, 10);
 
 function update(){

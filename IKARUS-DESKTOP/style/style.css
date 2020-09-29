@@ -21,7 +21,10 @@ body {
     font-family: whitney;
     src: url(../resources/fonts/whitneymedium.otf);
 }
-
+@font-face {
+    font-family: transformers;
+    src: url(../resources/fonts/transformers.ttf);
+}
 
 #expanse .description_text {
     text-align: center;
@@ -175,20 +178,21 @@ body {
 #control {
     display: flex;
     justify-content: flex-end;
+    width: 30%;
+    justify-content: flex-end;
     -webkit-app-region: no-drag;
 }
 
 #control > * {
     height: 100%;
     width: 27px;
-    background-color: #212226;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 #control > *:hover{
-    background-color: #363940/*#363940#282B2E;*/;
+    background-color: #282B2E; /* #363940; */
 }
 
 #control #cross:hover{
@@ -236,4 +240,43 @@ body {
 
 #control #cross > * > *:first-child{
     transform: rotate(45deg);
+}
+
+
+
+#logo_wrapper{
+    display: flex;
+    align-items: center;
+    width: 30%;
+    
+}
+#logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 30px;
+
+}
+#logo_text {
+    color: #bfbfbf;
+    font-family: transformers;
+    letter-spacing: 1.5px;
+    
+}
+#icon {
+    height: 80%;
+}
+
+
+
+#middle {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+#middle a{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #bfbfbf;
+    font-size: 12px;
 }
