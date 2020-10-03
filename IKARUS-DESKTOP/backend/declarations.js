@@ -19,6 +19,8 @@ var dataset = {
     "time": 0
 
     }
+
 var buffer = [];
 var running = false;
 var win = require('electron').remote.BrowserWindow.getFocusedWindow();
+var now = new Date();

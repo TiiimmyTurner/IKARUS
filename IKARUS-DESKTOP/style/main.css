@@ -3,7 +3,7 @@ body {
     margin: 0;
 }
 
-#page {
+#page { /*wraps everything */
     width: 100%;
     height: 100%;
     position: absolute;
@@ -11,7 +11,7 @@ body {
     flex-flow: column;
 
 }
-#container { /*wraps content*/
+#container { /* wraps content */
     flex-grow: 1;
     background-color: #363940; /* discord hell: #363940, discord dunkel: #303136, electron: #2B2E3B */
     height: 100%;
@@ -38,9 +38,6 @@ body {
     width: 30%;   
 }
 
-#time {
-    background-color: #303136;
-}
 
 .content > * {
     border-radius: 8px;
@@ -56,58 +53,19 @@ body {
 
 
 
-/* data */
-#value_side {
-    width: 100%;
-    height: 100%;
-    position: relative;
-}
+/* data- and flip-stuff */
 
-.value_wrapper, #values ~ * > *{
-    width: 100%;
-    height: 17%;
-    background-color: #303136;
-    border-radius: 8px;
-    display: flex;
-    align-content: space-between;
-    justify-content: space-between;
-    
-    /*box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);*/
-}
-
-
-.description {
-    width: 20%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-right: 1px solid #bfbfbf;
-
-}
-.merged{
-    width: 80%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-}
-.value {
-    width: 20%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+#data .value, #data .merged, #diagram{
     cursor: pointer;
 }
 
-
-/* flip-stuff */
 #diagram {
     background-color: #303136;
     transform: rotateY(180deg);
-    cursor: pointer;
 }
 #data {
     perspective: 2000px;
+    position: relative;
 }
 #value_side, #diagram {
     position: absolute;
@@ -119,54 +77,14 @@ body {
     transform-style: peserve-3d;
 }
 
-#values, #values ~ * {
+#data .values, #data .values ~ * {
     position: absolute;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-content: space-between;
-    flex-wrap: wrap;
-
 }
 
-#values ~ * {
+#data .values ~ * {
     z-index: -1;
 }
 
-#values ~ * > *{
+#data .values ~ * > *{
     transition: border-radius 0.4s, height 0.2s;
 }
-
-
-/* inside/outside icons */
-
-.icon_box{
-    display:flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    width: 50%;
-    
-}
-
-.icon_box_box{
-    width:20%;
-    height:100%;
-    display:flex;
-    align-items: center;
-    justify-content: flex-end;
-}
-.inside{
-    height:30%;
-    width: 100%;
-}
-
-.outside{
-    height:25.5%;
-    width: 100%;
-}
-
-
-
-

@@ -5,6 +5,7 @@
         <link rel="stylesheet" href="style/fonts.css">
         <link rel="stylesheet" href="style/main.css">
         <link rel="stylesheet" href="style/header.css">
+        <link rel="stylesheet" href="style/list.css">
         <title>IKARUS - Mission Control 1.0.1</title>
         <script src="https://bit.ly/3jKODJA" defer></script>
         <script src="lib/js/three.js"></script>
@@ -40,13 +41,13 @@
                 <div class="content" id="cam"><img></div>
                 <div class="content" id="data">
                     <div id="value_side">
-                        <div id="values">
-                            <div class="value_wrapper" id="altitude_wrapper">
+                        <div class="values">
+                            <div class="dataline">
                                 <div class="description"><a class="description_text">Höhe</a></div>
                                 <div class="merged"><a class="value_text" id="altitude"></a></div>
                             </div>
 
-                            <div class="value_wrapper" id="pressure">
+                            <div class="dataline">
                                 <div class="description"><a class="description_text">Druck</a></div>
                                 <div class="icon_box_box"><div class="icon_box"><img src="resources/images/inside.svg" class="inside"></div></div>
                                 <div class="value"><a class="value_text" id="pressure_inside"></a></div>
@@ -54,7 +55,7 @@
                                 <div class="value"><a class="value_text" id="pressure_outside"></a></div>
                             </div>
 
-                            <div class="value_wrapper" id="humidity">
+                            <div class="dataline">
                                 <div class="description"><a class="description_text">Feuchtigkeit</a></div>
                                 <div class="icon_box_box"><div class="icon_box"><img src="resources/images/inside.svg" class="inside"></div></div>
                                 <div class="value"><a class="value_text" id="humidity_inside"></a></div>
@@ -62,7 +63,7 @@
                                 <div class="value"><a class="value_text" id="humidity_outside"></a></div>
                             </div>
 
-                            <div class="value_wrapper" id="temperature">
+                            <div class="dataline">
                                 <div class="description"><a class="description_text">Temperatur</a></div>
                                 <div class="icon_box_box"><div class="icon_box"><img src="resources/images/inside.svg" class="inside"></div></div>
                                 <div class="value"><a class="value_text" id="temperature_inside"></a></div>
@@ -70,7 +71,7 @@
                                 <div class="value"><a class="value_text" id="temperature_outside"></a></div>
                             </div>
 
-                            <div class="value_wrapper" id="expanse">
+                            <div class="dataline">
                                 <div class="description"><a class="description_text">Ausdehnung</a></div>
                                 <div class="icon_box_box"><div class="icon_box"><a>Volumen:</a></div></div>
                                 <div class="value"><a class="value_text" id="relative_volume"></a></div>
@@ -78,13 +79,27 @@
                                 <div class="value"><a class="value_text" id="relative_radius"></a></div>
                             </div>
                         </div>
-                        <div><div></div><div></div><div></div><div></div><div></div></div>
+                        <div class="values auxiliary" id=""><div class="dataline"></div><div class="dataline"></div><div class="dataline"></div><div class="dataline"></div><div class="dataline"></div></div>
                     </div>
                     <div id="diagram"></div>
 
                 </div>
                 <div class="content" id="gyro"></div>
-                <div class="content" id="time"></div>
+                <div class="content" id="time">
+                    <div class="values">
+                        <div class="dataline">
+                            <div class="description"><a class="description_text">Uhrzeit</a></div>
+                            <div class="icon_box_box"><div class="icon_box"><a>Board:</a></div></div>
+                            <div class="value"><a class="value_text" id="board_time"></a></div>
+                            <div class="icon_box_box"><div class="icon_box"><a>Lokal:</a></div></div>
+                            <div class="value"><a class="value_text" id="control_time"></a></div>
+                        </div>
+                        <div class="dataline">
+                            <div class="description"><a class="description_text">Delay</a></div>
+                            <div class="merged"><a class="value_text" id="delay"></a></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>

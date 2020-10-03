@@ -1,5 +1,7 @@
 const fs = require('fs');
 
+setInterval(update, 10);
+
 function read_buffer(){
     if(buffer.length == 0){
         running = false;
@@ -19,7 +21,6 @@ function read_buffer(){
     setTimeout( () => {
         lastUpdate = new Date().getTime() / 1000;
         dataset = buffer[0];
-        update();
         buffer.splice(0, 1);
         read_buffer();
     }, wait)
@@ -27,8 +28,8 @@ function read_buffer(){
 
 //responsive font-size
 
-setInterval(() => {
-    document.querySelectorAll("#values a").forEach((element) => {
+function adaptFont(){
+    document.querySelectorAll(".dataline a").forEach((element) => {
 
         
 
@@ -52,8 +53,8 @@ setInterval(() => {
             })(),
 
             (() => {
-                if (document.querySelector("#values > div").offsetHeight <= 35){
-                    return 15 - Math.floor((35 - document.querySelector("#values > div").offsetHeight) / 5)
+                if (document.querySelector(".dataline").offsetHeight <= 35){
+                    return 15 - Math.floor((35 - document.querySelector(".dataline").offsetHeight) / 5)
                 }
                 else{
                     return 16;
@@ -65,10 +66,11 @@ setInterval(() => {
         + "px;");
 
     });
-    document.getElementById("time").innerHTML = document.querySelector("#pressure .description_text").style.fontSize + " " + document.querySelector(".description").clientWidth;
-}, 10);
+}
 
 function update(){
+    now = new Date();
+    adaptFont();
     //if (dataset["time"] == 0){return}
     const display = ["humidity_inside", "humidity_outside", "pressure_inside", "pressure_outside", "temperature_inside", "temperature_outside"];
     const units = {
@@ -83,12 +85,12 @@ function update(){
         "relative_radius": "%"
     }
 
-    function set(id, val, d, unit = true){
+    function set(id, val, decimals, unit = true){
         if(unit){
-            document.getElementById(id).innerHTML = +val.toFixed(d) + " " + units[id];
+            document.getElementById(id).innerHTML = +val.toFixed(decimals) + " " + units[id];
         }
         else{
-            document.getElementById(id).innerHTML = +val.toFixed(d)
+            document.getElementById(id).innerHTML = +val.toFixed(decimals)
         }
     }
 
@@ -150,10 +152,15 @@ function update(){
     //Altitude
     set("altitude", calc["altitude"], 0);
 
-    //Commands for uplink
-    
+    //Commands for uplink   
     fs.appendFile('temporary/commands.txt', commands, (err) => {if (err) throw err;})
     commands = '';
     
+    //time
+    var d = new Date();
+    d.setTime(d.getTime() - d.getTimezoneOffset()*60*1000)
+    document.getElementById("control_time").innerHTML = d.toISOString().substr(11, 8);
+    d.setTime(dataset["time"]*1000 - d.getTimezoneOffset()*60*1000)
+    document.getElementById("board_time").innerHTML = d.toISOString().substr(11, 8);
 
 }

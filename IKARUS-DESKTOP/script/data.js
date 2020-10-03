@@ -1,10 +1,10 @@
-document.querySelectorAll(".value, .merged").forEach((element) => { element.addEventListener("click", () => {
+document.querySelectorAll("#data .value, #data .merged").forEach((element) => { element.addEventListener("click", () => {
 
     document.getElementById("value_side").setAttribute("style", "transform: rotateY(180deg);");
     document.getElementById("diagram").setAttribute("style", "transform: rotateY(360deg);");
 
     
-    var wrappers = document.querySelectorAll("#values ~ * > *");
+    var wrappers = document.querySelectorAll("#data .values.auxiliary > *");
     for (var element of wrappers){
         if (element == wrappers[0]){
             element.setAttribute("style", "border-radius: 8px 8px 0px 0px; height: 20%; transition-delay: 0s;");
@@ -23,7 +23,7 @@ document.querySelectorAll(".value, .merged").forEach((element) => { element.addE
 document.querySelector("#diagram").addEventListener("click", () => {
     document.getElementById("value_side").setAttribute("style", "transform: rotateY(0deg);");
     document.getElementById("diagram").setAttribute("style", "transform: rotateY(180deg);");
-    document.querySelectorAll("#values ~ * > *").forEach((element) => {
+    document.querySelectorAll("#data .values.auxiliary > *").forEach((element) => {
         element.setAttribute("style", "border-radius: 8px; height: 17%; transition-delay: 0.5s;");
     });
 });
