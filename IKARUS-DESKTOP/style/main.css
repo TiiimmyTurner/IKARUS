@@ -33,9 +33,9 @@ body {
     width: 40%;
 }
 
-#data, #gyro, #time {
+#data, #gyro, #time, #chartcontainer {
     height: 40%;
-    width: 30%;   
+    width: 30%;   /* 30 */
 }
 
 
@@ -55,19 +55,31 @@ body {
 
 /* data- and flip-stuff */
 
-#data .value, #data .merged, #diagram{
+#data .value, #data .merged, #backside{
     cursor: pointer;
 }
 
-#diagram {
+#chart {
     background-color: #303136;
-    transform: rotateY(180deg);
+    border-radius: 8px;
 }
+
+#backside {
+    /*background-color: #303136;*/
+    transform: rotateY(180deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 #data {
     perspective: 2000px;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-#value_side, #diagram {
+#value_side, #backside {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -76,6 +88,7 @@ body {
     backface-visibility: hidden;
     transform-style: peserve-3d;
 }
+
 
 #data .values, #data .values ~ * {
     position: absolute;

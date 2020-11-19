@@ -9,8 +9,9 @@
         <title>IKARUS - Mission Control 1.0.1</title>
         <script src="https://bit.ly/3jKODJA" defer></script>
         <script src="lib/js/three.js"></script>
-        <script src="lib/js/OBJLoader.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.bundle.js" integrity="sha512-zO8oeHCxetPn1Hd9PdDleg5Tw1bAaP0YmNvPY8CwcRyUk7d7/+nyElmFrB6f7vg4f7Fv4sui1mcep8RIEShczg==" crossorigin="anonymous"></script>
         <script src="lib/js/MTLLoader.js"></script>
+        <script src="lib/js/OBJLoader.js"></script>
         <script src="backend/declarations.js"></script>
         <script src="backend/databridge.js"></script>
 
@@ -81,7 +82,8 @@
                         </div>
                         <div class="values auxiliary" id=""><div class="dataline"></div><div class="dataline"></div><div class="dataline"></div><div class="dataline"></div><div class="dataline"></div></div>
                     </div>
-                    <div id="diagram"></div>
+                    <div id="backside"><canvas id="chart"></canvas></div>
+                    
 
                 </div>
                 <div class="content" id="gyro"></div>

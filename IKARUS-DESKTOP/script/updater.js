@@ -2,23 +2,23 @@ const fs = require('fs');
 
 setInterval(update, 10);
 
-function read_buffer(){
-    if(buffer.length == 0){
+function read_buffer() {
+    if (buffer.length == 0) {
         running = false;
         return
     }
     var now = new Date().getTime() / 1000;
-    var wait = 1000 * (() =>{
-        if (now - lastUpdate >= buffer[0]["time"] - dataset["time"]){
+    var wait = 1000 * (() => {
+        if (now - lastUpdate >= buffer[0]["time"] - dataset["time"]) {
             return 0;
         }
 
         else {
             return buffer[0]["time"] - dataset["time"] - (now - lastUpdate)
         }
-        
+
     })()
-    setTimeout( () => {
+    setTimeout(() => {
         lastUpdate = new Date().getTime() / 1000;
         dataset = buffer[0];
         buffer.splice(0, 1);
@@ -28,10 +28,10 @@ function read_buffer(){
 
 //responsive font-size
 
-function adaptFont(){
+function adaptFont() {
     document.querySelectorAll(".dataline a").forEach((element) => {
 
-        
+
 
         /*
         if (element.clientWidth > element.parentElement.clientWidth - 6 || element.clientHeight > element.parentElement.clientHeight - 4){
@@ -41,70 +41,70 @@ function adaptFont(){
 
         */
         element.setAttribute("style", "font-size: " +
-        Math.min(
-            (() => {
-                if (window.innerWidth <= 1550){
-                    return 15 - Math.floor((1550 - window.innerWidth) / 100);
-                }
+            Math.min(
+                (() => {
+                    if (window.innerWidth <= 1550) {
+                        return 15 - Math.floor((1550 - window.innerWidth) / 100);
+                    }
 
-                else{
-                    return 16;
-                }
-            })(),
+                    else {
+                        return 16;
+                    }
+                })(),
 
-            (() => {
-                if (document.querySelector(".dataline").offsetHeight <= 35){
-                    return 15 - Math.floor((35 - document.querySelector(".dataline").offsetHeight) / 5)
-                }
-                else{
-                    return 16;
-                }
-            })()
-        ).toString()
-        
+                (() => {
+                    if (document.querySelector(".dataline").offsetHeight <= 35) {
+                        return 15 - Math.floor((35 - document.querySelector(".dataline").offsetHeight) / 5)
+                    }
+                    else {
+                        return 16;
+                    }
+                })()
+            ).toString()
 
-        + "px;");
+
+            + "px;");
 
     });
 }
 
-function update(){
+function update() {
     now = new Date();
     adaptFont();
     //if (dataset["time"] == 0){return}
     const display = ["humidity_inside", "humidity_outside", "pressure_inside", "pressure_outside", "temperature_inside", "temperature_outside"];
     const units = {
-        "humidity_inside":"%",
-        "humidity_outside":"%",
-        "pressure_inside":"hPa",
+        "humidity_inside": "%",
+        "humidity_outside": "%",
+        "pressure_inside": "hPa",
         "pressure_outside": "hPa",
-        "temperature_inside":"°C",
-        "temperature_outside":"°C",
+        "temperature_inside": "°C",
+        "temperature_outside": "°C",
         "altitude": "m",
         "relative_volume": "%",
         "relative_radius": "%"
     }
 
-    function set(id, val, decimals, unit = true){
-        if(unit){
+    function set(id, val, decimals, unit = true) {
+        if (unit) {
             document.getElementById(id).innerHTML = +val.toFixed(decimals) + " " + units[id];
         }
-        else{
+        else {
             document.getElementById(id).innerHTML = +val.toFixed(decimals)
         }
     }
 
-    function calculated_data(temperature, pressure){
+    function calculated_data(temperature, pressure) {
         R = 8.31446261815324;
         g = 9.81;
-    
+
         //initial conditions
         const height0 = 300;
         const v0 = 905;
         const temperature0 = 20;
         const mass_balloon = 0.1;
         const mass_probe = 0.3;
-    
+
         const pressure0 = 1013.25;
         var mass_gas = 4.002602 * pressure0 * v0 / R / (temperature0 + 273.15) / 1000;
         var v = v0 * (temperature + 273.15) * pressure0 / (temperature0 + 273.15) / pressure;
@@ -113,29 +113,31 @@ function update(){
 
         var acceleration = (g * mass_environment - g * mass) / mass;
         var thrust = mass_environment - mass_gas;
-        var relative_volume = v/v0;
-        var relative_radius = Math.pow(relative_volume, 1/3);
-        var altitude = (temperature + 273.15)/0.0065 * (Math.pow(pressure0/pressure, 1/5.257)-1);
-    
-        return {"acceleration": acceleration, "thrust": thrust, "volume_balloon": v,
-                "relative_volume": relative_volume, "relative_radius": relative_radius, "altitude": altitude}
-    
+        var relative_volume = v / v0;
+        var relative_radius = Math.pow(relative_volume, 1 / 3);
+        var altitude = (temperature + 273.15) / 0.0065 * (Math.pow(pressure0 / pressure, 1 / 5.257) - 1);
+
+        return {
+            "acceleration": acceleration, "thrust": thrust, "volume_balloon": v,
+            "relative_volume": relative_volume, "relative_radius": relative_radius, "altitude": altitude
+        }
+
     }
 
     //calculating additional values for current dataset
     var calc = calculated_data(dataset["temperature_outside"], dataset["pressure_outside"]);
-    
+
     //humidity, pressure and temperature
-    for(var x in dataset){
-        if(display.includes(x)){
-            if(x.includes("temperature")){
+    for (var x in dataset) {
+        if (display.includes(x)) {
+            if (x.includes("temperature")) {
                 set(x, dataset[x], 1);
             }
-            else{
+            else {
                 set(x, dataset[x], 0);
             }
         }
-        else if(x.includes("rotation")){
+        else if (x.includes("rotation")) {
             rotations[x[x.length - 1]] = dataset[x];
         }
     }
@@ -145,7 +147,7 @@ function update(){
     set("relative_radius", calc["relative_radius"] * 100, 0)
 
     //Map
-    if(isMapLoaded){
+    if (isMapLoaded) {
         updatePosition([dataset["gps_x"], dataset["gps_y"]]);
     }
 
@@ -153,14 +155,17 @@ function update(){
     set("altitude", calc["altitude"], 0);
 
     //Commands for uplink   
-    fs.appendFile('temporary/commands.txt', commands, (err) => {if (err) throw err;})
+    fs.appendFile('temporary/commands.txt', commands, (err) => { if (err) throw err; })
     commands = '';
-    
+
     //time
     var d = new Date();
-    d.setTime(d.getTime() - d.getTimezoneOffset()*60*1000)
+    var board = dataset["time"] * 1000 - d.getTimezoneOffset() * 60 * 1000;
+    var control = d.getTime() - d.getTimezoneOffset() * 60 * 1000;
+    d.setTime(control)
     document.getElementById("control_time").innerHTML = d.toISOString().substr(11, 8);
-    d.setTime(dataset["time"]*1000 - d.getTimezoneOffset()*60*1000)
+    d.setTime(board)
     document.getElementById("board_time").innerHTML = d.toISOString().substr(11, 8);
+    document.getElementById("delay").innerHTML = `${Math.round(control - board)} ms ${buffer.length}`;
 
 }
