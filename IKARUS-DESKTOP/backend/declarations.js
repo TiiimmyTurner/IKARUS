@@ -17,7 +17,13 @@ var dataset = {
     "gps_x": 48.001,
     "gps_y": 11,
     "time": 0,
-    "launch": 0
+    "launch": 0,
+    "acceleration": 0,
+    "thrust": 0, 
+    "volume_balloon": 0,
+    "relative_volume": 0, 
+    "relative_radius": 0, 
+    "altitude": 0
 
 }
 
@@ -27,3 +33,14 @@ var win = require('electron').remote.BrowserWindow.getFocusedWindow();
 var now = new Date();
 var chart;
 launch = "x";
+function commafy(arr){
+    str = "";
+    if(!Array.isArray(arr)) arr = Object.keys(arr);
+    for (var i = 0; i < arr.length; i++){
+        str += arr[i];
+        if (i < arr.length - 1){
+            str += ", ";
+        }
+    }
+    return str;
+}

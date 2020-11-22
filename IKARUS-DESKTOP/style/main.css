@@ -33,7 +33,7 @@ body {
     width: 40%;
 }
 
-#data, #gyro, #time, #chartcontainer {
+#data, #gyro, #time {
     height: 40%;
     width: 30%;   /* 30 */
 }
@@ -55,7 +55,7 @@ body {
 
 /* data- and flip-stuff */
 
-#data .value, #data .merged, #backside{
+#data .dataline, #backside{
     cursor: pointer;
 }
 
@@ -79,7 +79,7 @@ body {
     align-items: center;
     justify-content: center;
 }
-#value_side, #backside {
+#frontside, #backside {
     position: absolute;
     width: 100%;
     height: 100%;

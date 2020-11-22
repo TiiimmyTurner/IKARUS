@@ -19,10 +19,14 @@ new Promise((resolve) => {
 
     downlink.stdout.on('data', (data) => {
         var package = JSON.parse(data.toString())
-        log(package);
         for (var x of package) {
             buffer.push(x);
+            var calc = calculated_data(x["temperature_outside"], x["pressure_outside"]);
+            for (id in calc){
+                x[id] = calc[id];
+            }
         }
+        log(package);
         if (!running) {
             running = true;
             read_buffer();
@@ -43,7 +47,6 @@ new Promise((resolve) => {
     //uplink.unref();
 
     uplink.stdout.on('data', (msg) => {
-        console.log(msg.toString());
     });
 
     uplink.on("exit", function (code, signal) {
@@ -98,10 +101,13 @@ db.serialize(function () {
             db.run(`CREATE TABLE ${launch} (id INT, dt TEXT)`)
         }
     });*/
-    db.run(`CREATE TABLE IF NOT EXISTS ${launch} (time INT, pressure_outside INT, humidity_outside FLOAT)`);
+    var columns = [];
+    for (id in dataset){
+        columns.push(id + " FLOAT");
+    }
+    db.run(`CREATE TABLE IF NOT EXISTS ${launch} (${commafy(dataset).replaceAll(",", " FLOAT,")})`);
 
 });
-
 
 function log(data) {
     let rows = [];
@@ -130,7 +136,6 @@ function log(data) {
             }
         })
     });
-
 
 
 
