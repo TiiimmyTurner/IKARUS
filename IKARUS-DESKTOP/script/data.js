@@ -2,7 +2,6 @@
 
 
 
-
 document.querySelector("#backside").addEventListener("click", () => {
     document.getElementById("frontside").setAttribute("style", "transform: rotateY(0deg);");
     document.getElementById("backside").setAttribute("style", "transform: rotateY(180deg);");
@@ -43,11 +42,18 @@ function spawnChart(ids) {
                     data.push({ y: arrAvg(raw[id].value.slice(i, i + step)), t: new Date(1000 * arrAvg(raw[id].time.slice(i, i + step))) }); //interpolierung noch ändern: avg von ca 20 aber diese 20er in größeren Abständen
                 }
 
+                function Color(index){
+                    if (index <= 1){
+                        return ["#2083E4", "#D81B60"][index];
+                    }
+                    return "#D81B60";
+                }
+
                 datasets.push(
                     {
                         label: id,
-                        backgroundColor: "#2083E4",
-                        borderColor: "#2083E4",
+                        backgroundColor: Color(ids.indexOf(id)),
+                        borderColor: Color(ids.indexOf(id)),
                         data: data,
                         fill: false
                     }

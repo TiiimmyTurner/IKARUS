@@ -18,7 +18,10 @@ new Promise((resolve) => {
     var downlink = spawn(python, ['backend/downlink.py']);
 
     downlink.stdout.on('data', (data) => {
-        var package = JSON.parse(data.toString())
+        var lines = data.toString().split("\n");
+        console.log(lines);
+        var package = JSON.parse(lines[0]);
+        
         for (var x of package) {
             buffer.push(x);
             var calc = calculated_data(x["temperature_outside"], x["pressure_outside"]);
@@ -76,11 +79,9 @@ client.on('connect', function () {
 });
  
 client.on('message', function (topic, message) {
-  
     var package = JSON.parse(data.toString())
     for (var x of package){
         buffer.push(x);
-        log(x);
         console.log(x);
     }
     if(!running){
@@ -115,7 +116,7 @@ function log(data) {
         rows.push(row.name);
     }, function (err, number) {
 
-        db.serialize(() => {
+        //db.serialize(() => {
             for (var record of data) {
                 var union = [];
                 for (var k in record) {
@@ -131,11 +132,10 @@ function log(data) {
                     }
                    
                 }
-                //console.log(`INSERT INTO ${launch} (${into}) VALUES (${values})`);
                 db.run(`INSERT INTO ${launch} (${into}) VALUES (${values})`);
             }
         })
-    });
+    /*/)*/;
 
 
 

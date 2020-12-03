@@ -46,7 +46,7 @@ gyro_sensitivity = 1
 accel_sensitivity = 1
 
 minPackageDelay = 0
-minMeasureDelay = 0.01
+minMeasureDelay = 0
 minPackageSize = 0
 
 
@@ -70,7 +70,7 @@ def filter(gyr, acc, dt):
         accelData[0] = math.atan2(acc[1], acc[2])
         accelData[1] = -math.atan2(acc[0], math.sqrt(acc[2]**2 + acc[1]**2))
         for x in range(2):
-            angle[x] = 0.95 * gyrData[x] + 0.05 * accelData[x]
+            angle[x] = 0.92 * gyrData[x] + 0.08 * accelData[x]
     
     else:
         for x in range(2):
@@ -81,7 +81,10 @@ end = 0
 measure = time.time()
 sended = time.time()
 while True:
-    filter(mpu6050.gyro, mpu6050.acceleration, end - start)
+    try:
+        filter(mpu6050.gyro, mpu6050.acceleration, end - start)
+    except:
+        pass
     start = time.time()
 
     if time.time() - measure >= minMeasureDelay:
@@ -89,12 +92,22 @@ while True:
 
         dataset["rotation_x"] = -angle[0]
         dataset["rotation_y"] = angle[1]
-        dataset["rotation_z"] = mpu6050.gyro[2]
-        dataset["humidity_outside"] = bmp280.humidity
-        dataset["temperature_outside"] = bmp280.temperature
-        dataset["pressure_outside"] = bmp280.pressure
-        dataset["pressure_inside"] = bmp180.read_pressure() / 100
-        dataset["temperature_inside"] = bmp180.read_temperature()
+        try:
+            dataset["rotation_z"] = mpu6050.gyro[2]
+        except:
+            pass
+        try:
+            dataset["humidity_outside"] = bmp280.humidity
+            dataset["temperature_outside"] = bmp280.temperature
+            dataset["pressure_outside"] = bmp280.pressure
+        except:
+            pass
+        try:
+            dataset["pressure_inside"] = bmp180.read_pressure() / 100
+            dataset["temperature_inside"] = bmp180.read_temperature()
+        except:
+            pass
+        
         dataset["time"] = time.time()
         package.append(copy.deepcopy(dataset))
 

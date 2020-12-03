@@ -120,8 +120,7 @@ var data = (
         {
             description: "Feuchtigkeit",
             values: [
-                { description: "/inside", id: "humidity_inside" },
-                { description: "/outside", id: "humidity_outside" }
+                { id: "humidity_outside" }
             ]
         },
         {
@@ -184,7 +183,7 @@ ReactDOM.render(page, document.getElementById("root"));
 
 /*,*/
 var links = [
-
+    "lib/js/three.js",
     "lib/js/MTLLoader.js",
     "lib/js/OBJLoader.js",
     "backend/declarations.js",
@@ -197,12 +196,20 @@ var links = [
     "script/header.js",
     "script/data.js",
     "https://bit.ly/3jKODJA"
-]
+];
 
-for (var i = 0; i < links.length; i++){
-    var script = document.createElement("script");
-    script.src = links[i];
-    document.head.appendChild(script);
-} 
+(function loadScript(i){
+    return () => {
+        if (!links[i]) return;
+        var script = document.createElement("script");
+        script.src = links[i];
+        document.head.appendChild(script);
+        script.onload = loadScript(i + 1);
+        //document.head.insertBefore(script, document.head.firstChild);
+    }
+
+
+
+})(0)();
 
 

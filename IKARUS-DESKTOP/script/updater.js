@@ -109,7 +109,7 @@ function update() {
     now = new Date();
     adaptFont();
     //if (dataset["time"] == 0){return}
-    const display = ["humidity_inside", "humidity_outside", "pressure_inside", "pressure_outside", "temperature_inside", "temperature_outside"];
+    const display = ["humidity_outside", "pressure_inside", "pressure_outside", "temperature_inside", "temperature_outside"];
     const units = {
         "humidity_inside": "%",
         "humidity_outside": "%",
