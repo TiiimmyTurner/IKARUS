@@ -7,7 +7,6 @@ import paho.mqtt.publish as publish
 import adafruit_gps
 import serial
 
-print("Hey!")
 #setup
 
 #GPS setup
