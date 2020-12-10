@@ -39,13 +39,13 @@ const OBJLoader = new THREE.OBJLoader();
 const MTLLoader = new THREE.MTLLoader();
 
 new Promise((resolve) => {
-    MTLLoader.load('https://raw.githubusercontent.com/TiiimmyTurner/IKARUS/master/IKARUS-DESKTOP/resources/blender-files/sonde.mtl', (materials) => {
+    MTLLoader.load('https://raw.githubusercontent.com/TiiimmyTurner/IKARUS/master/Desktop/resources/blender-files/sonde.mtl', (materials) => {
         resolve(materials);
     })
 }).then((materials) => {
     materials.preload(); //optional
     OBJLoader.setMaterials(materials);
-    OBJLoader.load('https://raw.githubusercontent.com/TiiimmyTurner/IKARUS/master/IKARUS-DESKTOP/resources/blender-files/sonde.obj',
+    OBJLoader.load('https://raw.githubusercontent.com/TiiimmyTurner/IKARUS/master/Desktop/resources/blender-files/sonde.obj',
         (object) => {
             cube = object;
             scene.add(object);

@@ -1,0 +1,68 @@
+.values{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-content: space-between;
+    flex-wrap: wrap;
+
+}
+.dataline{
+    width: 100%;
+    background-color: #303136;
+    border-radius: 8px;
+    display: flex;
+    align-content: space-between;
+    justify-content: space-between;
+    
+    /*box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);*/
+}
+.description {
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid #bfbfbf;
+
+}
+.merged{
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.value {
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* subdescriptions / icons */
+
+.icon_box{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 50%;
+    
+}
+
+.icon_box_box{
+    width:20%;
+    height:100%;
+    display:flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.inside{
+    height:30%;
+    width: 100%;
+}
+
+.outside{
+    height:25.5%;
+    width: 100%;
+}

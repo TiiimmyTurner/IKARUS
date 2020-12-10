@@ -6,13 +6,14 @@ import Adafruit_BMP.BMP085 as BMP085
 import paho.mqtt.publish as publish
 import adafruit_gps
 import serial
+from picamera import PiCamera
 
 #setup
+# Camera setup (AZ-Delivery E-Book)
+camera = PiCamera()
+camera.start_preview()
 
-#GPS setup
-# RX = board.RX
-# TX = board.TX
-# uart = busio.UART(TX, RX, baudrate=9600, timeout=30)
+# GPS setup (adafruit GPS)
 uart = serial.Serial("/dev/ttyACM0", baudrate=9600, timeout=3000)
 gps = adafruit_gps.GPS(uart, debug=False)
 
@@ -26,7 +27,7 @@ i2c = busio.I2C(board.SCL, board.SDA)
 bmp180 = BMP085.BMP085() #hier read_temperature() und read_pressure(), bei allen anderen sensor.temperature, etc.
 bmp280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
 #bmp280_outside = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x75)
-#mpu6050 = adafruit_mpu6050.MPU6050(i2c)
+mpu6050 = adafruit_mpu6050.MPU6050(i2c)
 
 
 #Mosquitto setup
