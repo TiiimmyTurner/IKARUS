@@ -1,6 +1,6 @@
+
 function updateFrame() {
     var cam = document.querySelector("#cam > img");
-    cam.setAttribute("src", "videostream/cam.jpg");
 
 
     //resizing

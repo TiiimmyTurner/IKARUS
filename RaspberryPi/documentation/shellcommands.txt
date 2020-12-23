@@ -1,0 +1,42 @@
+# basic
+sudo apt install filezilla
+
+
+# python
+
+sudo pip3 install paho-mqtt
+sudo pip3 install adafruit-blinka
+sudo pip3 install adafruit-circuitpython-mpu6050
+sudo pip3 install adafruit-circuitpython-bmp280
+sudo pip3 install adafruit-circuitpython-bme280
+git clone https://github.com/adafruit/Adafruit_Python_BMP.git
+cd Adafruit_Python_BMP
+sudo python3 setup.py
+
+
+# LoRa (SX1272)
+
+sudo raspi-config nonint do_spi 0
+sudo apt-get install python-dev python3-dev
+
+# pip
+sudo pip install pip --upgrade
+sudo python3 -m pip uninstall pip && sudo apt install python3-pip --reinstall
+sudo apt-get install python-pip python3-pip
+
+sudo pip3 install RPi.GPIO
+sudo pip3 install spidev
+sudo pip3 install pyLoRa
+
+sudo apt-get install python-rpi.gpio python3-rpi.gpio
+sudo apt-get install python-spidev python3-spidev
+sudo apt-get install git
+sudo git clone https://github.com/rpsreal/pySX127x
+
+# cv2
+sudo pip3 install opencv-python
+sudo apt-get install libcblas-dev libhdf5-dev libhdf5-serial-dev libatlas-base-dev libjasper-dev libqtgui4 libqt4-test
+sudo apt-get install libatlas-base-dev
+
+# discord
+python3 -m pip install -U discord.py

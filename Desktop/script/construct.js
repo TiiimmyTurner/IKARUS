@@ -65,6 +65,7 @@ class Row extends React.Component {
 
 }
 
+
 class List extends React.Component {
     
     render() {
@@ -164,7 +165,7 @@ var page = (
 
         <div id="container">
             <div className="content" id="map"><div></div></div>
-            <div className="content" id="cam"><img /></div>
+            <div className="content" id="cam"><img src={VIDEOSTREAM}/></div>
             <div className="content" id="data">
                 <div id="frontside">
                     {data}
@@ -186,7 +187,6 @@ var links = [
     "lib/js/three.js",
     "lib/js/MTLLoader.js",
     "lib/js/OBJLoader.js",
-    "backend/declarations.js",
     "backend/databridge.js",
 
     "script/map.js",

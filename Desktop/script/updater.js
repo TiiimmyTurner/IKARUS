@@ -1,32 +1,8 @@
 const fs = require('fs');
 
-setInterval(update, 10);
+setInterval(update, updateDelay);
 
-function read_buffer() {
-    if (buffer.length == 0) {
-        running = false;
-        return
-    }
-    var now = new Date().getTime() / 1000;
-    var wait = 1000 * (() => {
-        if (now - lastUpdate >= buffer[0]["time"] - dataset["time"]) {
-            return 0;
-        }
-
-        else {
-            return buffer[0]["time"] - dataset["time"] - (now - lastUpdate)
-        }
-
-    })()
-    setTimeout(() => {
-        lastUpdate = new Date().getTime() / 1000;
-        dataset = buffer[0];
-        buffer.splice(0, 1);
-        read_buffer();
-    }, wait)
-}
-
-function calculated_data(temperature, pressure) {
+function calculation(temperature, pressure) {
     R = 8.31446261815324;
     g = 9.81;
 
@@ -111,6 +87,7 @@ function update() {
     //if (dataset["time"] == 0){return}
     const display = ["humidity_outside", "pressure_inside", "pressure_outside", "temperature_inside", "temperature_outside"];
     const units = {
+
         "humidity_inside": "%",
         "humidity_outside": "%",
         "pressure_inside": "hPa",
@@ -120,6 +97,7 @@ function update() {
         "altitude": "m",
         "relative_volume": "%",
         "relative_radius": "%"
+        
     }
 
     function set(id, val, decimals, unit = true) {
@@ -151,13 +129,14 @@ function update() {
     set("relative_volume", dataset["relative_volume"] * 100, 0)
     set("relative_radius", dataset["relative_radius"] * 100, 0)
 
-    //Map
-    if (isMapLoaded) {
-        updatePosition([dataset["gps_x"], dataset["gps_y"]]);
-    }
-
     //Altitude
     set("altitude", dataset["altitude"], 0);
+
+    //Map
+    if(!mapMouseDown && now.getTime() - lastMapPan >= mapUpdateDelay && isMapLoaded && dataset["gps_x"] != null && dataset["gps_x"] != null) {
+        lastMapPan = now.getTime();
+        updatePosition([dataset["gps_x"], dataset["gps_y"]]);
+    }
 
     //Commands for uplink   
     fs.appendFile('temporary/commands.txt', commands, (err) => { if (err) throw err; })
@@ -171,5 +150,12 @@ function update() {
     document.getElementById("control_time").innerHTML = d.toISOString().substr(11, 8);
     d.setTime(board)
     document.getElementById("board_time").innerHTML = d.toISOString().substr(11, 8);
-    document.getElementById("delay").innerHTML = `${Math.round(control - board)} ms ${buffer.length}`;
+    document.getElementById("delay").innerHTML = `${Math.round(control - board)} ms`;
+
+    //Videostream
+    if ( !(async () => Boolean(VIDEOSTREAM) || (await fetch(VIDEOSTREAM)).ok)() ) {
+        var html = document.getElementBy("cam").innerHTML;
+        document.getElementBy("cam").innerHTML = html;
+
+    }
 }

@@ -1,145 +1,215 @@
 import sys, board, busio, time, json, math, copy
+from typing import Dict
 import paho.mqtt.client as mqtt
 import RPi.GPIO as GPIO
-import adafruit_mpu6050, adafruit_bme280
-import Adafruit_BMP.BMP085 as BMP085
+import adafruit_mpu6050, adafruit_bme280, Adafruit_BMP.BMP085, adafruit_gps
 import paho.mqtt.publish as publish
-import adafruit_gps
 import serial
 from picamera import PiCamera
+from classes.lora import Transceiver
+from classes.stream import Webstream
+import asyncio
+from threading import Thread
+from multiprocessing import Process
+from classes.data import Dataset, Value
+from classes.bot import Bot
+import discord
+import sqlite3
 
-#setup
-# Camera setup (AZ-Delivery E-Book)
+
+
+# ---------- Parameters ----------
+
+LAUNCH = "a"
+
+DATA_DELAY = 0
+DISCORD_DELAY = 5
+
+GYRO_SENSITIVITY = 1
+ACCELEROMETER_SENSITIVITY = 1
+GYRO_WEIGHTING = 0.92
+
+DISCORD_SERVER_ID = 772478346226303010
+DISCORD_CHANNEL_ID = 791062412786532393
+DISCORD_BOT_TOKEN = "NzcyMDgzMjI5ODIwODQ2MTEw.X51gig.uxKv9Lx-APUNTVXst1N8wc6Vtz0"
+
+
+
+
+# ---------- Setup ----------
+
+
+# Peripherals
+
+# LoRa
+
+lora = Transceiver()
+lora.send("Hello there!")
+
+# Camera
+
 camera = PiCamera()
-camera.start_preview()
+camera.resolution = (620, 480)
+camera.framerate = 24
+output = Webstream()
 
-# GPS setup (adafruit GPS)
+camera.start_recording(output, format='mjpeg', splitter_port=1)
+camera.start_recording('video.h264', splitter_port=2, resize=(1280, 720))
+
+address = ('', 8000)
+
+webstream = Thread(target=output.stream, args=(address,))
+webstream.start()
+
+# GPS
+# -> https://learn.adafruit.com/adafruit-ultimate-gps/circuitpython-python-uart-usage
+
 uart = serial.Serial("/dev/ttyACM0", baudrate=9600, timeout=3000)
 gps = adafruit_gps.GPS(uart, debug=False)
 
 gps.send_command(b'PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0')
 gps.send_command(b'PMTK220,1000')
-last_print = time.monotonic()
 
-#Sensor setup
+# Sensors
+
 i2c = busio.I2C(board.SCL, board.SDA)
 
-bmp180 = BMP085.BMP085() #hier read_temperature() und read_pressure(), bei allen anderen sensor.temperature, etc.
 bmp280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
-#bmp280_outside = adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x75)
 mpu6050 = adafruit_mpu6050.MPU6050(i2c)
+bmp180 = Adafruit_BMP.BMP085.BMP085() 
+# bmp180: read_temperature() and read_pressure(), rest: sensor.value
 
 
-#Mosquitto setup
+
+# Mosquitto
+
 MQTT_SERVER = "localhost"
 MQTT_PATH = "data"
 
 
+# Discord
 
-#declarations, definitions and constants
-package = []
-dataset = {
+bot = Bot()
+bot.set_channel(DISCORD_CHANNEL_ID)
+discord_thread = Thread(target=bot.login, args=(DISCORD_BOT_TOKEN,))
+discord_thread.start()
 
-    "temperature_inside" : 0,
-    "temperature_outside" : 0,
-    "pressure_inside" : 0,
-    "pressure_outside" : 0,
-    "humidity_inside" : 0,
-    "humidity_outside" : 0,
-    "rotation_x" : 0,
-    "rotation_y" : 0,
-    "rotation_z" : 0,
-    "gps_x": 0,
-    "gps_y": 0,
-    "time": 0
+
+
+# global variables
+
+orientation = [0, 0]
+dataset = Dataset({
+    "temperature_inside" : Value(lambda s : s.read_temperature(), bmp180),
+    "temperature_outside" : Value(lambda s : s.temperature, bmp280),
+    "pressure_inside" : Value(lambda s : s.read_pressure() / 100, bmp180),
+    "pressure_outside" : Value(lambda s : s.pressure, bmp280),
+    "humidity_outside" : Value(lambda s : s.humidity, bmp280),
+    "rotation_x" : Value(lambda: -orientation[0]),
+    "rotation_y" : Value(lambda: orientation[1]),
+    "rotation_z" : Value(lambda: mpu6050.gyro[2]),
+    "gps_x": Value(lambda s : s.latitude if s.has_fix else None, gps),
+    "gps_y": Value(lambda s : s.longitude if s.has_fix else None, gps),
+    "time": Value(time.time),
+    "satellites": Value(lambda s : s.satellites, gps),
+    "gps_fix": Value(lambda s : s.has_fix, gps, "BOOLEAN"),
+    "launch": LAUNCH
+})
+
+
+
+# SQLite
+
+db = sqlite3.connect("data.db")
+c = db.cursor()
+
+def commafy(iteratable):
+    s = ""
+    for x in iteratable:
+        s += (str(x) + ", ")
+
+    return s[:-2]
+
+
+c.execute("""CREATE TABLE IF NOT EXISTS {0} ({1})""".format("'" + str(LAUNCH) + "'", commafy([x + " " + dataset.types()[x] for x in dataset.types()])))
+db.commit()
+
+def log(data):
+    c.execute("""SELECT * FROM PRAGMA_TABLE_INFO('{}')""".format(LAUNCH))
+    columns = [x[1] for x in c.fetchall()]
+    union = [column for column in columns if data[column]]
+    INTO = commafy(union)
+    VALUES = commafy(["'" + data[key] + "'" if dataset.types()[key] == "TEXT" else data[key] for key in union])
+    c.execute("""INSERT INTO {0} ({1}) VALUES ({2})""".format(LAUNCH, INTO, VALUES))
+    db.commit()
+
+
+# gyro calculations
+
+def updateAngle(gyr, acc, dt):
     
-    }
-
-angle = [0, 0]
-gyro_sensitivity = 1
-accel_sensitivity = 1
-
-minPackageDelay = 0
-minMeasureDelay = 0
-minPackageSize = 0
-
-
-
-#Gyrofilter
-
-inRange = True
-
-def filter(gyr, acc, dt):
-    global angle
     gyrData = [0, 0] #x, y
     accelData = [0, 0] #x, y
     
-
     #integrate
     for x in range(2):
-        gyrData[x] = angle[x] + gyr[x] / 180 * 3.141 * dt / gyro_sensitivity
+        gyrData[x] = orientation[x] + gyr[x] / 180 * 3.141 * dt / GYRO_SENSITIVITY
 
-    #compensate drift if data =! bullshit (ToDo)
-    if inRange:
+    #compensate drift if data =! bullshit (condition is todo)
+    accelInRange = True
+    if accelInRange:
         accelData[0] = math.atan2(acc[1], acc[2])
         accelData[1] = -math.atan2(acc[0], math.sqrt(acc[2]**2 + acc[1]**2))
         for x in range(2):
-            angle[x] = 0.92 * gyrData[x] + 0.08 * accelData[x]
+            orientation[x] = GYRO_WEIGHTING * gyrData[x] + (1 - GYRO_WEIGHTING) * accelData[x]
     
     else:
         for x in range(2):
-            angle[x] = gyrData[x]
+            orientation[x] = gyrData[x]
 
 
-# clock
 
-start = 0
-end = 0
-measure = time.time()
+# main loop
+
+begin = time.time()
 sended = time.time()
-while True:
+uploaded = time.time()
 
-    try:
-        filter(mpu6050.gyro, mpu6050.acceleration, end - start)
-    except:
-        pass
+try:
+    while True:
 
-    start = time.time()
-    if time.time() - measure >= minMeasureDelay:
-        measure = time.time()
+        now = time.time()
+        dt = now - begin
+        begin = now
 
-        gps.update()
-        if not gps.has_fix:
-            print('Waiting for fix...')
-        else:
-            dataset["gps_x"] = gps.latitude
-            dataset["gps_y"] = gps.longitude
-        
-        dataset["rotation_x"] = -angle[0]
-        dataset["rotation_y"] = angle[1]
         try:
-            dataset["rotation_z"] = mpu6050.gyro[2]
+            updateAngle(mpu6050.gyro, mpu6050.acceleration, dt)
+        except KeyboardInterrupt:
+            sys.exit(0)
         except:
             pass
-        try:
-            dataset["humidity_outside"] = bmp280.humidity
-            dataset["temperature_outside"] = bmp280.temperature
-            dataset["pressure_outside"] = bmp280.pressure
-        except:
-            pass
-        try:
-            dataset["pressure_inside"] = bmp180.read_pressure() / 100
-            dataset["temperature_inside"] = bmp180.read_temperature()
-        except:
-            pass
-        
-        dataset["time"] = time.time()
-        package.append(copy.deepcopy(dataset))
 
-        if time.time() - sended >= minPackageDelay and len(package) >= minPackageSize:
+        if time.time() - sended >= DATA_DELAY:
+            gps.update()
+            data = dataset.update()
+            publish.single(MQTT_PATH, json.dumps(data), hostname=MQTT_SERVER)
             sended = time.time()
-            publish.single(MQTT_PATH, json.dumps(package), hostname=MQTT_SERVER)
-            package = []
+            log(data)
+            
+            if time.time() - uploaded >= DISCORD_DELAY and bot.ready:
+                if not bot.sending:
+                    try:
+                        bot.send("{0} {1}".format(data["gps_x"], data["gps_y"]))
+                        uploaded = time.time()
+                    except:
+                        print("Discord Bot error!")
 
 
-    end = time.time()
+
+except KeyboardInterrupt:
+    pass
+
+finally:
+    lora.shutdown()
+    camera.stop_recording(splitter_port=1)
+    camera.stop_recording(splitter_port=2)

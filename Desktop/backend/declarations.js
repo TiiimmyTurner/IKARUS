@@ -1,8 +1,18 @@
+// parameters
+var mapUpdateDelay = 1000;
+var mapPanDelayAfterDrag = 200;
+var updateDelay = 20;
+var checkStreamDelay = 0
+const RASPBERRYPI = "192.168.0.115";
+const VIDEOSTREAM = `http://${RASPBERRYPI}:8000/stream.mjpg`
+
+// global variables
 var map;
 var marker;
 var isMapLoaded = false;
+var mapMouseDown = false;
 var commands = "Dew it!";
-var lastUpdate = 0;
+var lastMapPan = 0;
 var dataset = {
 
     "temperature_inside": 0,
@@ -27,14 +37,12 @@ var dataset = {
 
 }
 
-var buffer = [];
-var running = false;
 var win = require('electron').remote.BrowserWindow.getFocusedWindow();
 var now = new Date();
 var chart;
 launch = "x";
 function commafy(arr){
-    str = "";
+    var str = "";
     if(!Array.isArray(arr)) arr = Object.keys(arr);
     for (var i = 0; i < arr.length; i++){
         str += arr[i];

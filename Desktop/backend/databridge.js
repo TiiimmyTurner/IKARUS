@@ -19,21 +19,16 @@ new Promise((resolve) => {
 
     downlink.stdout.on('data', (data) => {
         var lines = data.toString().split("\n");
-        console.log(lines);
-        var package = JSON.parse(lines[0]);
+        var data = JSON.parse(lines[0]);
         
-        for (var x of package) {
-            buffer.push(x);
-            var calc = calculated_data(x["temperature_outside"], x["pressure_outside"]);
-            for (id in calc){
-                x[id] = calc[id];
-            }
+        var calc = calculation(data["temperature_outside"], data["pressure_outside"]);
+        for (id in calc){
+            data[id] = calc[id];
         }
-        log(package);
-        if (!running) {
-            running = true;
-            read_buffer();
-        }
+        dataset = data
+        
+        log(data)
+
     });
 
     downlink.on("exit", function (code, signal) {
@@ -69,7 +64,7 @@ new Promise((resolve) => {
 var mqtt = require('mqtt');
 
 
-var client = mqtt.connect('mqtt://192.168.0.115');
+var client = mqtt.connect('mqtt://broker.192.168.0.115');
  
 client.on('connect', function () {
   client.subscribe('data', function (err) {
@@ -79,16 +74,18 @@ client.on('connect', function () {
 });
  
 client.on('message', function (topic, message) {
-    var package = JSON.parse(data.toString())
-    for (var x of package){
-        buffer.push(x);
-        console.log(x);
+
+    var lines = data.toString().split("\n");
+    var data = JSON.parse(lines[0]);
+    
+    var calc = calculation(x["temperature_outside"], x["pressure_outside"]);
+    for (id in calc){
+        x[id] = calc[id];
     }
-    if(!running){
-        running = true;
-        read_buffer();
-    }
-    client.end()
+    dataset = data
+
+    // log(data);
+
 })
 
 
@@ -111,29 +108,35 @@ db.serialize(function () {
 });
 
 function log(data) {
-    let rows = [];
-    db.each(`select * from pragma_table_info('${launch}')`, function (err, row) {
-        rows.push(row.name);
+    let columns = [];
+    db.each(`SELECT * FROM PRAGMA_TABLE_INFO('${launch}')`, function (err, row) {
+        columns.push(row.name);
     }, function (err, number) {
 
         //db.serialize(() => {
-            for (var record of data) {
-                var union = [];
-                for (var k in record) {
-                    if (rows.includes(k)) union.push(k);
-                };
-                var into = "", values = "";
-                for (var i = 0; i < union.length; i++) {
-                    into += union[i];
-                    values += record[union[i]].toString();
+            var union = [];
+            for (var k in data) {
+                if (columns.includes(k)) union.push(k);
+            };
+            var into = "", values = "";
+            
+            for (var i = 0; i < union.length; i++) {
+
+                if (data[union[i]]) {
+
+                    into += union[i].toString();
+                    values += data[union[i]];
                     if (i < union.length - 1){
                         into += ",";
                         values += ",";
                     }
-                   
+
                 }
-                db.run(`INSERT INTO ${launch} (${into}) VALUES (${values})`);
+                
             }
+            
+            db.run(`INSERT INTO ${launch} (${into}) VALUES (${values})`);
+            
         })
     /*/)*/;
 

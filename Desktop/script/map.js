@@ -21,13 +21,23 @@ function initMap() {
             position: formalize([0, 0]),
             map: map
         });
+        map.addListener("mousedown", () => {
+            mapMouseDown = true;
+        })
+        map.addListener("mouseup", () => {
+            mapMouseDown = false;
+            lastMapPan =  (new Date()).getTime() - (mapUpdateDelay - mapPanDelayAfterDrag);
+        })
         resolve();
     }
-    ).then(()=>{isMapLoaded = true;});
+    ).then(()=>{
+        isMapLoaded = true;
+    });
 }
 
 function updatePosition(_coords){
-    map.panTo(formalize(_coords));
+    map.panTo(formalize(_coords));  
+
     marker.setPosition(formalize(_coords));
 }
 
