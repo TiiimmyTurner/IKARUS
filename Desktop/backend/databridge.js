@@ -101,9 +101,9 @@ db.serialize(function () {
     });*/
     var columns = [];
     for (id in dataset){
-        columns.push(id + " FLOAT");
+        columns.push(id + " TEXT");
     }
-    db.run(`CREATE TABLE IF NOT EXISTS ${launch} (${commafy(dataset).replaceAll(",", " FLOAT,")})`);
+    db.run(`CREATE TABLE IF NOT EXISTS ${launch} (${commafy(columns)})`);
 
 });
 
