@@ -26,12 +26,23 @@ function flip(ids) {
     
 }
 
+function getValue(options={ id, unit, description, decimals, factor, get }) {
+    options.factor = options.factor ? options.factor : 1;
+    return {
+        id: options.id,
+        description: options.description,
+        get: options.get ? options.get : () => {
+            return (global.dataset[options.id] * options.factor).toFixed(options.decimals) + (options.unit ? " " + options.unit : "")
+        }
+    }
+}
+
 class Row extends React.Component {
     render() {
         var description = <div className="description"><a className="description_text">{this.props.description}</a></div>;
-        var values = [];
+        var items = [];
         var ids = [];
-        for (var value of this.props.values) {
+        this.props.values.map((value, index) => {
             ids.push(value.id);
             if (this.props.values.length == 1) {
                 var kind = "merged";
@@ -50,15 +61,17 @@ class Row extends React.Component {
                     var tag = <a>{value.description}</a>;
                 }
 
-                values.push(<div className="icon_box_box"><div className="icon_box">{tag}</div></div>);
+                items.push(<div className="icon_box_box" key={2 * index}><div className="icon_box">{tag}</div></div>);
             }
 
-            values.push(<div className={kind}><a className="value_text" id={value.id}></a></div>)
-        }
+            
+            items.push(<div className={kind} key={2 * index + 1}><a className="value_text" id={value.id}>{value.get()}</a></div>)
+            
+        })
         return (
             <div style={{height: `${this.props.height}`}} className="dataline" onClick={(this.props.click) ? this.props.click(ids) : () => {}}>
                 {description}
-                {values}
+                {items}
             </div>
         );
     }
@@ -70,9 +83,9 @@ class List extends React.Component {
     
     render() {
         var rows = [];
-        for (var row of this.props.rows) {
-            rows.push(<Row height={`${(100 - (this.props.rows.length - 1) * 3) / this.props.rows.length}%`} values={row.values} description={row.description} click={this.props.click}/>)
-        }
+        this.props.rows.map((row, index) => {
+            rows.push(<Row height={`${(100 - (this.props.rows.length - 1) * 3) / this.props.rows.length}%`} values={row.values} description={row.description} click={this.props.click} key={index}/>)
+        })
         return <div className="values">{rows}</div>;
     }
 }
@@ -83,64 +96,77 @@ class List extends React.Component {
 
 
 
-var time = (
-    <List rows={[
+var time = {
+    rows: [
         {
             description: "Uhrzeit",
             values: [
-                { id: "control_time", description: "Lokal:" },
-                { id: "board_time", description: "Board:" }
+                getValue({ id: "control_time", description: "Lokal:", get: () => {
+                    var time = new Date()
+                    var control = time.getTime() - time.getTimezoneOffset() * 60 * 1000;
+                    time.setTime(control)
+                    return time.toISOString().substr(11, 8) 
+                }}),
+                getValue({ id: "board_time", description: "Board:", get: () => {
+                    var time = new Date();
+                    var board = dataset["time"] * 1000 - time.getTimezoneOffset() * 60 * 1000;
+                    time.setTime(board)
+                    return time.toISOString().substr(11, 8);
+                } })
             ]
         },
 
         {
             description: "Delay",
             values: [
-                { id: "delay"}
+                getValue({ id: "delay", get: () => {
+                    return (new Date()).getTime() - dataset.time * 1000 + " ms"
+                }})
             ]
         }
-    ]} />
-);
+    ]
+}
 
-
-var data = (
-    <List rows={[
+var data = {
+    rows: [
         {
             description: "Höhe",
             values: [
-                { id: "altitude" }
+                getValue({ id: "altitude", unit: "m"})
             ]
         },
         {
             description: "Druck",
             values: [
-                { description: "/inside", id: "pressure_inside" },
-                { description: "/outside", id: "pressure_outside" }
+                getValue({ description: "/inside", id: "pressure_inside", unit: "hPa" }),
+                getValue({ description: "/outside", id: "pressure_outside", unit: "hPa" })
             ]
         },
         {
             description: "Feuchtigkeit",
             values: [
-                { id: "humidity_outside" }
+                getValue({ id: "humidity_outside", unit: "%" })
             ]
         },
         {
             description: "Temperatur",
             values: [
-                { description: "/inside", id: "temperature_inside" },
-                { description: "/outside", id: "temperature_outside" }
+                getValue({ description: "/inside", id: "temperature_inside", unit: "\u00b0C", decimals: 1 }),
+                getValue({ description: "/outside", id: "temperature_outside", unit: "\u00b0C", decimals: 1 })
             ]
         },
         {
             description: "Ausdehnung",
             values: [
-                { description: "Volumen:", id: "relative_volume" },
-                { description: "Radius:", id: "relative_radius" }
+                getValue({ description: "Volumen:", id: "relative_volume", unit: "%", factor: 100 }),
+                getValue({ description: "Radius:", id: "relative_radius", unit: "%", factor: 100 })
             ]
         }
 
-    ]} click={flip} />
-);
+    ], click: flip
+}
+
+reload = () => {
 
 var page = (
     <div id="page">
@@ -168,19 +194,24 @@ var page = (
             <div className="content" id="cam"><img src={VIDEOSTREAM}/></div>
             <div className="content" id="data">
                 <div id="frontside">
-                    {data}
+                    <List rows={data.rows} click={data.click}/>
                     <div className="values auxiliary" id=""><div className="dataline"></div><div className="dataline"></div><div className="dataline"></div><div className="dataline"></div><div className="dataline"></div></div>
                 </div>
                 <div id="backside"><canvas id="chart"></canvas></div>
             </div>
             <div className="content" id="gyro"></div>
             <div className="content" id="time">
-                {time}
+                <List rows={time.rows}/>
             </div>
         </div></div>
     );
 
-ReactDOM.render(page, document.getElementById("root"));
+
+ReactDOM.render(page, document.getElementById("root"))
+
+}
+
+reload();
 
 /*,*/
 var links = [

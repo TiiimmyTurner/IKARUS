@@ -13,7 +13,7 @@ var isMapLoaded = false;
 var mapMouseDown = false;
 var commands = "Dew it!";
 var lastMapPan = 0;
-var dataset = {
+dataset = {
 
     "temperature_inside": 0,
     "temperature_outside": 20.234,
@@ -52,3 +52,4 @@ function commafy(arr){
     }
     return str;
 }
+function reload(){};

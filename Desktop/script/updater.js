@@ -82,55 +82,11 @@ function adaptFont() {
 }
 
 function update() {
-    now = new Date();
+    reload();
     adaptFont();
     //if (dataset["time"] == 0){return}
-    const display = ["humidity_outside", "pressure_inside", "pressure_outside", "temperature_inside", "temperature_outside"];
-    const units = {
-
-        "humidity_inside": "%",
-        "humidity_outside": "%",
-        "pressure_inside": "hPa",
-        "pressure_outside": "hPa",
-        "temperature_inside": "\u00b0C",
-        "temperature_outside": "\u00b0C",
-        "altitude": "m",
-        "relative_volume": "%",
-        "relative_radius": "%"
-        
-    }
-
-    function set(id, val, decimals, unit = true) {
-        if (unit) {
-            document.getElementById(id).innerHTML = +val.toFixed(decimals) + " " + units[id];
-        }
-        else {
-            document.getElementById(id).innerHTML = +val.toFixed(decimals)
-        }
-    }
-
-
-    //humidity, pressure and temperature
-    for (var x in dataset) {
-        if (display.includes(x)) {
-            if (x.includes("temperature")) {
-                set(x, dataset[x], 1);
-            }
-            else {
-                set(x, dataset[x], 0);
-            }
-        }
-        else if (x.includes("rotation")) {
-            rotations[x[x.length - 1]] = dataset[x];
-        }
-    }
-
-    //Expanse of Balloon
-    set("relative_volume", dataset["relative_volume"] * 100, 0)
-    set("relative_radius", dataset["relative_radius"] * 100, 0)
-
-    //Altitude
-    set("altitude", dataset["altitude"], 0);
+    rotations.x = dataset.rotation_x;
+    rotations.y = dataset.rotation_y;
 
     //Map
     if(!mapMouseDown && now.getTime() - lastMapPan >= mapUpdateDelay && isMapLoaded && dataset["gps_x"] != null && dataset["gps_x"] != null) {
@@ -141,16 +97,6 @@ function update() {
     //Commands for uplink   
     fs.appendFile('temporary/commands.txt', commands, (err) => { if (err) throw err; })
     commands = '';
-
-    //time
-    var d = new Date();
-    var board = dataset["time"] * 1000 - d.getTimezoneOffset() * 60 * 1000;
-    var control = d.getTime() - d.getTimezoneOffset() * 60 * 1000;
-    d.setTime(control)
-    document.getElementById("control_time").innerHTML = d.toISOString().substr(11, 8);
-    d.setTime(board)
-    document.getElementById("board_time").innerHTML = d.toISOString().substr(11, 8);
-    document.getElementById("delay").innerHTML = `${Math.round(control - board)} ms`;
 
     //Videostream
     if ( !(async () => Boolean(VIDEOSTREAM) || (await fetch(VIDEOSTREAM)).ok)() ) {
