@@ -21,8 +21,8 @@ function spawnChart(ids) {
         db.each(`SELECT time, ${columns} FROM ${launch} ORDER BY time ASC`, function (err, row) {
             for (var id of ids){
                 if (!raw[id]) raw[id] = {value: [], time: []};
-                raw[id].value.push(row[id]);
-                raw[id].time.push(row.time);
+                raw[id].value.push(+row[id]);
+                raw[id].time.push(+row.time);
             }
             
         }, function (err, count) {

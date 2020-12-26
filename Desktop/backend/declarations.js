@@ -38,7 +38,6 @@ dataset = {
 }
 
 var win = require('electron').remote.BrowserWindow.getFocusedWindow();
-var now = new Date();
 var chart;
 launch = "x";
 function commafy(arr){

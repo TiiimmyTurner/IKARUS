@@ -89,6 +89,7 @@ function update() {
     rotations.y = dataset.rotation_y;
 
     //Map
+    now = new Date();
     if(!mapMouseDown && now.getTime() - lastMapPan >= mapUpdateDelay && isMapLoaded && dataset["gps_x"] != null && dataset["gps_x"] != null) {
         lastMapPan = now.getTime();
         updatePosition([dataset["gps_x"], dataset["gps_y"]]);

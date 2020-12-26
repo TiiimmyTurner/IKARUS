@@ -7,7 +7,7 @@ function flip(ids) {
         document.getElementById("backside").setAttribute("style", "transform: rotateY(360deg); height: 100%; width: 100%;");
     
         
-
+/*
         var wrappers = document.querySelectorAll("#data .values.auxiliary > *");
         for (var element of wrappers) {
             if (element == wrappers[0]) {
@@ -20,7 +20,7 @@ function flip(ids) {
                 element.setAttribute("style", "border-radius: 0px; height: 20%; transition-delay: 0s;");
             }
         }
-    
+*/
         setTimeout(spawnChart(ids), 250);
     }
     
@@ -39,9 +39,18 @@ function getValue(options={ id, unit, description, decimals, factor, get }) {
 
 class Row extends React.Component {
     render() {
-        var description = <div className="description"><a className="description_text">{this.props.description}</a></div>;
+        itemStyle = {
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
+        }
+        
+        var descriptionPortion = this.props.descriptionPortion ? this.props.descriptionPortion : 0.2;
+        var valuePortion = (1 - descriptionPortion) / this.props.values.length;
+        var description = <div style={Object.assign(itemStyle, {width: descriptionPortion * 100 + "%"})} className="description"><a className="description_text">{this.props.description}</a></div>;
         var items = [];
         var ids = [];
+
         this.props.values.map((value, index) => {
             ids.push(value.id);
             if (this.props.values.length == 1) {
@@ -50,6 +59,8 @@ class Row extends React.Component {
             else {
                 var kind = "value";
             }
+
+
 
             if (value.description) {
                 if (value.description.startsWith("/")) {
@@ -67,9 +78,18 @@ class Row extends React.Component {
             
             items.push(<div className={kind} key={2 * index + 1}><a className="value_text" id={value.id}>{value.get()}</a></div>)
             
-        })
+        });
+        var style = {
+            height: this.props.height,
+            width: "100%",
+            backgroundColor: "#303136",
+            borderRadius: "8px",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+        };
         return (
-            <div style={{height: `${this.props.height}`}} className="dataline" onClick={(this.props.click) ? this.props.click(ids) : () => {}}>
+            <div style={style} className="dataline" onClick={(this.props.click) ? this.props.click(ids) : () => {}}>
                 {description}
                 {items}
             </div>
@@ -86,7 +106,14 @@ class List extends React.Component {
         this.props.rows.map((row, index) => {
             rows.push(<Row height={`${(100 - (this.props.rows.length - 1) * 3) / this.props.rows.length}%`} values={row.values} description={row.description} click={this.props.click} key={index}/>)
         })
-        return <div className="values">{rows}</div>;
+        var style = {
+            display: "flex",
+            width: "100%",
+            height: "100%",
+            justifyContent: "center",
+            flexWrap: "wrap"
+        };
+        return <div style={style} className="values">{rows}</div>;
     }
 }
 
@@ -195,7 +222,6 @@ var page = (
             <div className="content" id="data">
                 <div id="frontside">
                     <List rows={data.rows} click={data.click}/>
-                    <div className="values auxiliary" id=""><div className="dataline"></div><div className="dataline"></div><div className="dataline"></div><div className="dataline"></div><div className="dataline"></div></div>
                 </div>
                 <div id="backside"><canvas id="chart"></canvas></div>
             </div>
