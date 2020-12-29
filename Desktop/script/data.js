@@ -18,7 +18,7 @@ function spawnChart(ids) {
         var raw = {};
         const recordCount = 20;
         var columns = commafy(ids);
-        db.each(`SELECT time, ${columns} FROM ${launch} ORDER BY time ASC`, function (err, row) {
+        db.each(`SELECT time, ${columns} FROM ${dataset.launch} ORDER BY time ASC`, function (err, row) {
             for (var id of ids){
                 if (!raw[id]) raw[id] = {value: [], time: []};
                 raw[id].value.push(+row[id]);

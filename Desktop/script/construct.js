@@ -39,7 +39,7 @@ function getValue(options={ id, unit, description, decimals, factor, get }) {
 
 class Row extends React.Component {
     render() {
-        itemStyle = {
+        var itemStyle = {
             display: "flex",
             justifyContent: "center",
             alignItems: "center"
@@ -47,39 +47,36 @@ class Row extends React.Component {
         
         var descriptionPortion = this.props.descriptionPortion ? this.props.descriptionPortion : 0.2;
         var valuePortion = (1 - descriptionPortion) / this.props.values.length;
-        var description = <div style={Object.assign(itemStyle, {width: descriptionPortion * 100 + "%"})} className="description"><a className="description_text">{this.props.description}</a></div>;
+        var description = <div style={{...itemStyle, width: descriptionPortion * 100 + "%", borderRight: "1px solid #bfbfbf"}}><a className="text list description">{this.props.description}</a></div>;
         var items = [];
         var ids = [];
 
         this.props.values.map((value, index) => {
             ids.push(value.id);
-            if (this.props.values.length == 1) {
-                var kind = "merged";
-            }
-            else {
-                var kind = "value";
-            }
 
 
-
+            var valueWidth = valuePortion * 100 + "%";
             if (value.description) {
+                var descriptionWidth = valuePortion / 2 * 100 + "%";
+                valueWidth = valuePortion / 2 * 100 + "%";
+
                 if (value.description.startsWith("/")) {
                     var icon = value.description.substring(1);
-                    var tag = <img src={`resources/images/${icon}.svg`} className={icon}></img>;
+                    var tag = <img style={{height: icon == "inside" ? "30%" : icon == "outside" ? "25.5%" : "0"}} src={`resources/images/${icon}.svg`}></img>;
                 }
 
                 else {
-                    var tag = <a>{value.description}</a>;
+                    var tag = <a className="text list value description">{value.description}</a>;
                 }
 
-                items.push(<div className="icon_box_box" key={2 * index}><div className="icon_box">{tag}</div></div>);
+                items.push(<div style={{...itemStyle, width: descriptionWidth}} key={2 * index}><div style={{...itemStyle, width: "70%", height: "100%", justifyContent: "flex-end"}} >{tag}</div></div>);
             }
 
+            items.push(<div style={{...itemStyle, width: valueWidth}} key={2 * index + 1}><a id={value.id} className="text list value">{value.get()}</a></div>)
             
-            items.push(<div className={kind} key={2 * index + 1}><a className="value_text" id={value.id}>{value.get()}</a></div>)
-            
+
         });
-        var style = {
+        var rowStyle = {
             height: this.props.height,
             width: "100%",
             backgroundColor: "#303136",
@@ -87,9 +84,10 @@ class Row extends React.Component {
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-between",
+            cursor: this.props.click ? "pointer" : undefined
         };
         return (
-            <div style={style} className="dataline" onClick={(this.props.click) ? this.props.click(ids) : () => {}}>
+            <div className="list row" style={rowStyle} onClick={(this.props.click) ? this.props.click(ids) : () => {}}>
                 {description}
                 {items}
             </div>
@@ -110,10 +108,10 @@ class List extends React.Component {
             display: "flex",
             width: "100%",
             height: "100%",
-            justifyContent: "center",
+            alignContent: "space-between",
             flexWrap: "wrap"
         };
-        return <div style={style} className="values">{rows}</div>;
+        return <div style={style}>{rows}</div>;
     }
 }
 
@@ -269,4 +267,4 @@ var links = [
 
 })(0)();
 
-
+loaded.react = true;

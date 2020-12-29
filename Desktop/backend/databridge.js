@@ -60,7 +60,7 @@ new Promise((resolve) => {
 
 
 
-
+/*
 var mqtt = require('mqtt');
 
 
@@ -69,7 +69,7 @@ var client = mqtt.connect('mqtt://broker.192.168.0.115');
 client.on('connect', function () {
   client.subscribe('data', function (err) {
   });
-  console.log("connected");
+  // console.log("connected");
 
 });
  
@@ -86,46 +86,89 @@ client.on('message', function (topic, message) {
 
     // log(data);
 
-})
+})*/
 
 
 var sqlite = require('sqlite3').verbose();
 db = new sqlite.Database('data.db');
 
-db.serialize(function () {
-    /*db.each(`SELECT name FROM sqlite_master WHERE type='table' AND name = '${launch}'`, function (err, row) {
-    }, (err, count)=>{
-        if (count == 0){
-            db.run(`CREATE TABLE ${launch} (id INT, dt TEXT)`)
-        }
-    });*/
-    var columns = [];
-    for (id in dataset){
-        columns.push(id + " TEXT");
-    }
-    db.run(`CREATE TABLE IF NOT EXISTS ${launch} (${commafy(columns)})`);
+function createTable(data) {
+    db.serialize(function () {
+        /*db.each(`SELECT name FROM sqlite_master WHERE type='table' AND name = '${data.launch}'`, function (err, row) {
+        }, (err, count)=>{
+            if (count == 0){
+                db.run(`CREATE TABLE ${data.launch} (id INT, dt TEXT)`)
+            }
+        });*/
 
-});
+        var columns = [];
+
+        Object.keys(data).map( id => {
+            if (!logblacklist.includes(id)) {
+                var entry = id + " ";
+                switch(typeof data[id]) {
+                    case "boolean":
+                        entry += "BOOLEAN";
+                    case "number":
+                        entry += "FLOAT";
+                    default:
+                        entry += "TEXT";
+                }
+
+                columns.push(entry);
+            }
+        });
+        console.log(`CREATE TABLE IF NOT EXISTS ${data.launch} (${commafy(columns)})`);
+        db.run(`CREATE TABLE IF NOT EXISTS ${data.launch} (${commafy(columns)})`);
+
+    });    
+}
+
 
 function log(data) {
+
+    Object.keys(data).map( id => {
+        if (typeof data[id] == "number") {
+            data[id] = +data[id].toFixed(3);
+        }
+    })
+
+    console.log(data)
+
+    if (!tables[data.launch]) {
+        createTable(data);
+    }
+
     let columns = [];
-    db.each(`SELECT * FROM PRAGMA_TABLE_INFO('${launch}')`, function (err, row) {
-        columns.push(row.name);
+    db.each(`SELECT * FROM PRAGMA_TABLE_INFO('${data.launch}')`, function (err, row) {
+        columns.push(row);
     }, function (err, number) {
 
-        //db.serialize(() => {
             var union = [];
+            var ids = [];
+            columns.map( column => {
+                ids.push(column.name);
+            })
+
             for (var k in data) {
-                if (columns.includes(k)) union.push(k);
+                if (ids.includes(k)) union.push(k);
             };
+
             var into = "", values = "";
             
-            for (var i = 0; i < union.length; i++) {
+            union.map( id, i => {
 
-                if (data[union[i]]) {
+                if (data[id]) {
 
-                    into += union[i].toString();
-                    values += data[union[i]];
+                    into += id.toString();
+
+                    if (columns[id].type == "TEXT") {
+                        values += '"' + data[id] + '"';
+                    }
+                    else {
+                        values += data[id]
+                    }
+                    
                     if (i < union.length - 1){
                         into += ",";
                         values += ",";
@@ -133,12 +176,10 @@ function log(data) {
 
                 }
                 
-            }
+            })
+            db.run(`INSERT INTO ${data.launch} (${into}) VALUES (${values})`);
             
-            db.run(`INSERT INTO ${launch} (${into}) VALUES (${values})`);
-            
-        })
-    /*/)*/;
+        });
 
 
 

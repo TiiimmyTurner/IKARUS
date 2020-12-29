@@ -17,14 +17,12 @@
     src: url(../resources/fonts/transformers.ttf);
 }
 
-#expanse .description_text {
-    text-align: center;
-}
-.value_text, .icon_box a, .description_text{
+
+.text.list{
     font-family: whitney;
     color: white;
 }
 
-.description_text{
+.text.list.description {
     font-weight: bold;
 }

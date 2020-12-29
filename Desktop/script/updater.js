@@ -42,7 +42,7 @@ function calculation(temperature, pressure) {
 //responsive font-size
 
 function adaptFont() {
-    document.querySelectorAll(".dataline a").forEach((element) => {
+    document.querySelectorAll(".text.list").forEach((element) => {
 
 
 
@@ -66,8 +66,8 @@ function adaptFont() {
                 })(),
 
                 (() => {
-                    if (document.querySelector(".dataline").offsetHeight <= 35) {
-                        return 15 - Math.floor((35 - document.querySelector(".dataline").offsetHeight) / 5)
+                    if (document.querySelector(".list.row").offsetHeight <= 35) {
+                        return 15 - Math.floor((35 - document.querySelector(".list.row").offsetHeight) / 5)
                     }
                     else {
                         return 16;
@@ -84,6 +84,11 @@ function adaptFont() {
 function update() {
     reload();
     adaptFont();
+    if (!loaded.loaded && loaded.react && loaded.map && loaded.gyro) {
+        win.start();
+        loaded.loaded = true
+    }
+
     //if (dataset["time"] == 0){return}
     rotations.x = dataset.rotation_x;
     rotations.y = dataset.rotation_y;

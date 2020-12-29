@@ -39,7 +39,6 @@ dataset = {
 
 var win = require('electron').remote.BrowserWindow.getFocusedWindow();
 var chart;
-launch = "x";
 function commafy(arr){
     var str = "";
     if(!Array.isArray(arr)) arr = Object.keys(arr);
@@ -52,3 +51,6 @@ function commafy(arr){
     return str;
 }
 function reload(){};
+var loaded = {};
+var tables = {};
+var logblacklist = ["rotation_z"];

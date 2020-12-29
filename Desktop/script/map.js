@@ -31,6 +31,7 @@ function initMap() {
         resolve();
     }
     ).then(()=>{
+        loaded.map = true;
         isMapLoaded = true;
     });
 }

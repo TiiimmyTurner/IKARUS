@@ -40,3 +40,10 @@ sudo apt-get install libatlas-base-dev
 
 # discord
 python3 -m pip install -U discord.py
+
+# surfstick
+sudo apt-get install -y usb-modeswitch
+sudo apt-get install usb-modeswitch
+sudo apt-get install ppp wvdial
+sudo wvdialconf /etc/wvdial.conf
+sudo nano /etc/wvdial.conf

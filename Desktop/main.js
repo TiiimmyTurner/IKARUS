@@ -5,9 +5,28 @@ const nativeImage = require('electron').nativeImage;
 var image = nativeImage.createFromPath(__dirname + '/resources/images/icon_white.ico');
 image.setTemplateImage(true);
 
+var loadingwin;
+var mainwin;
+
 function createWindow () {
+
+  loadingwin = new BrowserWindow({
+    icon: image,
+    width: 500,
+    height: 300,
+    frame: false,
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true
+    }
+
+  });
+
+  loadingwin.loadFile('loading.html');
+  loadingwin.show()
+
   // Erstelle das Browser-Fenster.
-  const win = new BrowserWindow({
+  mainwin = new BrowserWindow({
     icon: image,
     minWidth: 500,
     minHeight: 500,
@@ -18,9 +37,22 @@ function createWindow () {
     }
 
   });
-  win.webContents.openDevTools();
-  win.loadFile('main.html');
-  win.maximize();
+  mainwin.hide();
+
+  mainwin.loadFile('main.html');
+
+  mainwin.start = () => {
+
+    loadingwin.on("close", () => {
+      mainwin.maximize();
+      // mainwin.webContents.openDevTools();
+    })
+
+    loadingwin.close();
+  }
+  mainwin.start();
+  mainwin.openDevTools()
+  mainwin.start = () => {};
   
 
 }

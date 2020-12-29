@@ -11,7 +11,7 @@ body {
     flex-flow: column;
 
 }
-#container { /* wraps content */
+#container { /* wraps everything except header */
     flex-grow: 1;
     background-color: #363940; /* discord hell: #363940, discord dunkel: #303136, electron: #2B2E3B */
     height: 100%;
@@ -22,22 +22,21 @@ body {
     flex-wrap: wrap;
     overflow: hidden;
 }
+
 .content {
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 40%;
 }
 
 #cam, #map {
-    height: 40%;
     width: 40%;
 }
 
 #data, #gyro, #time {
-    height: 40%;
-    width: 30%;   /* 30 */
+    width: 30%;
 }
-
 
 .content > * {
     border-radius: 8px;
@@ -55,10 +54,6 @@ body {
 
 /* data- and flip-stuff */
 
-#data .dataline, #backside{
-    cursor: pointer;
-}
-
 #chart {
     background-color: #303136;
     border-radius: 8px;
@@ -70,6 +65,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 
 #data {
@@ -79,6 +75,7 @@ body {
     align-items: center;
     justify-content: center;
 }
+
 #frontside, #backside {
     position: absolute;
     width: 100%;
@@ -87,17 +84,4 @@ body {
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     transform-style: peserve-3d;
-}
-
-
-#data .values, #data .values ~ * {
-    position: absolute;
-}
-
-#data .values ~ * {
-    z-index: -1;
-}
-
-#data .values ~ * > *{
-    transition: border-radius 0.4s, height 0.2s;
 }
