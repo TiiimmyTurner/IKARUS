@@ -7,7 +7,7 @@ start = datetime.now()
 start_s = start.strftime("%d-%m-%Y-%H-%M-%S")
 
 #Mosquitto
-MQTT_SERVER = "raspberrypi"
+MQTT_SERVER = "192.168.0.115"
 MQTT_PATH = "data"
 
 def on_connect(_client, userdata, flags, rc):

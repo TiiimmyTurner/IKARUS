@@ -1,6 +1,10 @@
 
 function updateFrame() {
+
     var cam = document.querySelector("#cam > img");
+    if (!cam) {
+        return
+    }
 
 
     //resizing

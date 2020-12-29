@@ -8,7 +8,7 @@ image.setTemplateImage(true);
 var loadingwin;
 var mainwin;
 
-function createWindow () {
+function createWindow() {
 
   loadingwin = new BrowserWindow({
     icon: image,
@@ -50,10 +50,10 @@ function createWindow () {
 
     loadingwin.close();
   }
-  mainwin.start();
-  mainwin.openDevTools()
-  mainwin.start = () => {};
-  
+
+  // mainwin.start();
+  // mainwin.start = () => {};
+
 
 }
 

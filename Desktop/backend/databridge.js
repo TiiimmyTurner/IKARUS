@@ -94,12 +94,6 @@ db = new sqlite.Database('data.db');
 
 function createTable(data) {
     db.serialize(function () {
-        /*db.each(`SELECT name FROM sqlite_master WHERE type='table' AND name = '${data.launch}'`, function (err, row) {
-        }, (err, count)=>{
-            if (count == 0){
-                db.run(`CREATE TABLE ${data.launch} (id INT, dt TEXT)`)
-            }
-        });*/
 
         var columns = [];
 
@@ -109,16 +103,19 @@ function createTable(data) {
                 switch(typeof data[id]) {
                     case "boolean":
                         entry += "BOOLEAN";
+                        break
                     case "number":
                         entry += "FLOAT";
+                        break
                     default:
                         entry += "TEXT";
+                        break
                 }
 
                 columns.push(entry);
             }
         });
-        console.log(`CREATE TABLE IF NOT EXISTS ${data.launch} (${commafy(columns)})`);
+        
         db.run(`CREATE TABLE IF NOT EXISTS ${data.launch} (${commafy(columns)})`);
 
     });    
@@ -126,58 +123,50 @@ function createTable(data) {
 
 
 function log(data) {
-
     Object.keys(data).map( id => {
         if (typeof data[id] == "number") {
             data[id] = +data[id].toFixed(3);
         }
     })
 
-    console.log(data)
-
-    if (!tables[data.launch]) {
+    if (!tables.includes(data.launch)) {
         createTable(data);
+        tables.push(data.launch)
     }
 
-    let columns = [];
+    let columns = {};
     db.each(`SELECT * FROM PRAGMA_TABLE_INFO('${data.launch}')`, function (err, row) {
-        columns.push(row);
+        columns[row.name] = row;
     }, function (err, number) {
 
             var union = [];
-            var ids = [];
-            columns.map( column => {
-                ids.push(column.name);
-            })
 
             for (var k in data) {
-                if (ids.includes(k)) union.push(k);
+                if (Object.keys(columns).includes(k)){
+                    union.push(k)
+                };
             };
 
-            var into = "", values = "";
+            var into = [], values = [];
             
-            union.map( id, i => {
+            union.map( id => {
 
                 if (data[id]) {
 
-                    into += id.toString();
+                    into.push(id.toString());
 
                     if (columns[id].type == "TEXT") {
-                        values += '"' + data[id] + '"';
+                        values.push('"' + data[id] + '"');
                     }
                     else {
-                        values += data[id]
-                    }
-                    
-                    if (i < union.length - 1){
-                        into += ",";
-                        values += ",";
+                        values.push(data[id])
                     }
 
                 }
                 
             })
-            db.run(`INSERT INTO ${data.launch} (${into}) VALUES (${values})`);
+
+            db.run(`INSERT INTO ${data.launch} (${commafy(into)}) VALUES (${commafy(values)})`);
             
         });
 

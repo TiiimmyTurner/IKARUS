@@ -31,7 +31,18 @@ function getValue(options={ id, unit, description, decimals, factor, get }) {
     return {
         id: options.id,
         description: options.description,
-        get: options.get ? options.get : () => {
+        get: () => {
+            if (options.get) {
+                try {
+                    return options.get();
+                }
+                catch (e) {
+                    return "";   
+                }
+            }
+            if (!global.dataset[options.id]) {
+                return ""
+            }
             return (global.dataset[options.id] * options.factor).toFixed(options.decimals) + (options.unit ? " " + options.unit : "")
         }
     }
@@ -116,7 +127,17 @@ class List extends React.Component {
 }
 
 
-
+class Cam extends React.Component {
+    render() {
+        if (videostream_active){
+            return <img src={VIDEOSTREAM}/>
+        }
+        
+        else {
+            return <div/>
+        }
+    }
+}
 
 
 
@@ -216,7 +237,7 @@ var page = (
 
         <div id="container">
             <div className="content" id="map"><div></div></div>
-            <div className="content" id="cam"><img src={VIDEOSTREAM}/></div>
+            <div className="content" id="cam"><Cam/></div>
             <div className="content" id="data">
                 <div id="frontside">
                     <List rows={data.rows} click={data.click}/>

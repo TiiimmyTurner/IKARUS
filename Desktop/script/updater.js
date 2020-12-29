@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { resolve } = require('path');
 
 setInterval(update, updateDelay);
 
@@ -82,6 +83,7 @@ function adaptFont() {
 }
 
 function update() {
+    now = new Date();
     reload();
     adaptFont();
     if (!loaded.loaded && loaded.react && loaded.map && loaded.gyro) {
@@ -94,7 +96,6 @@ function update() {
     rotations.y = dataset.rotation_y;
 
     //Map
-    now = new Date();
     if(!mapMouseDown && now.getTime() - lastMapPan >= mapUpdateDelay && isMapLoaded && dataset["gps_x"] != null && dataset["gps_x"] != null) {
         lastMapPan = now.getTime();
         updatePosition([dataset["gps_x"], dataset["gps_y"]]);
@@ -105,9 +106,31 @@ function update() {
     commands = '';
 
     //Videostream
-    if ( !(async () => Boolean(VIDEOSTREAM) || (await fetch(VIDEOSTREAM)).ok)() ) {
-        var html = document.getElementBy("cam").innerHTML;
-        document.getElementBy("cam").innerHTML = html;
+    if (now.getTime() - lastStreamCheck >= checkStreamDelay) {
+        lastStreamCheck = now.getTime();
 
+        new Promise ( (resolve, reject) => {
+            fetch(VIDEOSTREAM).then((response, err) => {
+                if (!err) {
+                    if (response.ok) {
+                        videostream_active = true
+                        return;
+                    }            
+                }
+    
+                videostream_active = false
+                resolve();
+    
+            }).catch ( () => {
+    
+                videostream_active = false
+                resolve();
+            
+            })        
+        }).catch( err => {
+            videostream_active = false
+        });
+    
     }
+
 }

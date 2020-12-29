@@ -2,7 +2,7 @@
 var mapUpdateDelay = 1000;
 var mapPanDelayAfterDrag = 200;
 var updateDelay = 20;
-var checkStreamDelay = 0
+var checkStreamDelay = 30000
 const RASPBERRYPI = "192.168.0.115";
 const VIDEOSTREAM = `http://${RASPBERRYPI}:8000/stream.mjpg`
 
@@ -13,9 +13,11 @@ var isMapLoaded = false;
 var mapMouseDown = false;
 var commands = "Dew it!";
 var lastMapPan = 0;
-dataset = {
+var lastStreamCheck = 0;
 
-    "temperature_inside": 0,
+var parameterEncoding = {
+
+    "temperature_inside": "",
     "temperature_outside": 20.234,
     "pressure_inside": 0,
     "pressure_outside": 1013,
@@ -36,6 +38,39 @@ dataset = {
     "altitude": 0
 
 }
+function getParameterDescription(id) {
+    var name;
+    if (id.includes("inside")) {
+        name = "Innen"
+    }
+    if (id.includes("outside")) {
+        name = "Au\u00DFen"
+    }
+    if (name) {
+        if (id.includes("pressure")){
+            name += "druck"
+        }
+        if (id.includes("temperature")){
+            name += "temperatur"
+        }
+    }
+    if (id == "altitude") {
+        name = "H\u00F6he"
+    }
+    if (id == "humidity_outside") {
+        name = "Luftfeuchtigkeit"
+    }
+    if (id.includes("relative")) {
+        if (id.includes("radius")) {
+            name = "relativer Radius"
+        }
+        if (id.includes("volume")) {
+            name = "relatives Volumen"
+        }
+    }
+    return name;
+}
+dataset = {}
 
 var win = require('electron').remote.BrowserWindow.getFocusedWindow();
 var chart;
@@ -52,5 +87,6 @@ function commafy(arr){
 }
 function reload(){};
 var loaded = {};
-var tables = {};
-var logblacklist = ["rotation_z"];
+var tables = [];
+var logblacklist = [ "rotation_z", "rotation_y", "rotation_x", "satellites", "launch" ];
+var videostream_active = false;

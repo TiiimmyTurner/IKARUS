@@ -19,7 +19,6 @@ CALLBACK = "REC"
 class Transceiver(LoRa):
 
     def __init__(self, verbose=False):
-        print("init")
         BOARD.setup()
         BOARD.reset()
         super(Transceiver, self).__init__(verbose)

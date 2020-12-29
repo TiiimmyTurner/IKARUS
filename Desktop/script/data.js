@@ -13,6 +13,14 @@ document.querySelector("#backside").addEventListener("click", () => {
 
 
 function spawnChart(ids) {
+
+    // db.each(`SELECT name FROM sqlite_master WHERE type='table' AND name = '${data.launch}'`, function (err, row) {
+    // }, (err, count)=>{
+    //     if (count == 0){
+    //         db.run(`CREATE TABLE ${data.launch} (id INT, dt TEXT)`)
+    //     }
+    // });
+
     return () => {
 
         var raw = {};
@@ -27,37 +35,39 @@ function spawnChart(ids) {
             
         }, function (err, count) {
             var datasets = [];
-            for (id of ids) {
-                var data = [];
-                const arrAvg = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
+            if (!err) {
+                for (id of ids) {
+                    var data = [];
+                    const arrAvg = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
 
-                if (raw[id].value.length < recordCount) {
-                    step = 1;
-                }
-                else {
-                    var step = Math.floor(raw[id].value.length / recordCount);
-                }
-
-                for (var i = 0; i < raw[id].value.length; i += step) {
-                    data.push({ y: arrAvg(raw[id].value.slice(i, i + step)), t: new Date(1000 * arrAvg(raw[id].time.slice(i, i + step))) }); //interpolierung noch ändern: avg von ca 20 aber diese 20er in größeren Abständen
-                }
-
-                function Color(index){
-                    if (index <= 1){
-                        return ["#2083E4", "#D81B60"][index];
+                    if (raw[id].value.length < recordCount) {
+                        step = 1;
                     }
-                    return "#D81B60";
-                }
-
-                datasets.push(
-                    {
-                        label: id,
-                        backgroundColor: Color(ids.indexOf(id)),
-                        borderColor: Color(ids.indexOf(id)),
-                        data: data,
-                        fill: false
+                    else {
+                        var step = Math.floor(raw[id].value.length / recordCount);
                     }
-                );
+
+                    for (var i = 0; i < raw[id].value.length; i += step) {
+                        data.push({ y: arrAvg(raw[id].value.slice(i, i + step)), t: new Date(1000 * arrAvg(raw[id].time.slice(i, i + step))) }); //interpolierung noch ändern: avg von ca 20 aber diese 20er in größeren Abständen
+                    }
+
+                    function Color(index){
+                        if (index <= 1){
+                            return ["#2083E4", "#D81B60"][index];
+                        }
+                        return "#D81B60";
+                    }
+
+                    datasets.push(
+                        {
+                            label: getParameterDescription(id),
+                            backgroundColor: Color(ids.indexOf(id)),
+                            borderColor: Color(ids.indexOf(id)),
+                            data: data,
+                            fill: false
+                        }
+                    );
+                }
             }
 
             

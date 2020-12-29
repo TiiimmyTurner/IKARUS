@@ -18,12 +18,18 @@ import sqlite3
 
 
 
+if len(sys.argv) != 2 or sys.argv[1] == "":
+    sys.exit(0)
+
+
+
 # ---------- Parameters ----------
 
-LAUNCH = "a"
+LAUNCH = sys.argv[1]
 
-DATA_DELAY = 0
+DATA_DELAY = 1
 DISCORD_DELAY = 5
+LORA_DELAY = 60
 
 GYRO_SENSITIVITY = 1
 ACCELEROMETER_SENSITIVITY = 1
@@ -44,7 +50,6 @@ DISCORD_BOT_TOKEN = "".join([chr(byte) for byte in [78, 122, 99, 121, 77, 68, 10
 # LoRa
 
 lora = Transceiver()
-lora.send("Hello there!")
 
 # Camera
 
@@ -108,8 +113,8 @@ dataset = Dataset({
     "rotation_x" : Value(lambda: -orientation[0]),
     "rotation_y" : Value(lambda: orientation[1]),
     "rotation_z" : Value(lambda: mpu6050.gyro[2]),
-    "gps_x": Value(lambda s : s.latitude if s.has_fix else None, gps),
-    "gps_y": Value(lambda s : s.longitude if s.has_fix else None, gps),
+    "gps_x": Value(lambda s : s.latitude if s.has_fix else 0, gps),
+    "gps_y": Value(lambda s : s.longitude if s.has_fix else 0, gps),
     "time": Value(time.time),
     "satellites": Value(lambda s : s.satellites, gps),
     "gps_fix": Value(lambda s : s.has_fix, gps, "BOOLEAN"),
@@ -172,8 +177,9 @@ def updateAngle(gyr, acc, dt):
 # main loop
 
 begin = time.time()
-sended = time.time()
-uploaded = time.time()
+last_mqtt = time.time()
+last_discord = time.time()
+last_lora = time.time()
 
 try:
     while True:
@@ -189,20 +195,27 @@ try:
         except:
             pass
 
-        if time.time() - sended >= DATA_DELAY:
+        if time.time() - last_mqtt >= DATA_DELAY:
             gps.update()
             data = dataset.update()
             publish.single(MQTT_PATH, json.dumps(data), hostname=MQTT_SERVER)
-            sended = time.time()
+            last_mqtt = time.time()
             log(data)
             
-            if time.time() - uploaded >= DISCORD_DELAY and bot.ready:
+            if time.time() - last_discord >= DISCORD_DELAY and bot.ready:
                 if not bot.sending:
                     try:
                         bot.send("{0} {1}".format(data["gps_x"], data["gps_y"]))
-                        uploaded = time.time()
+                        last_discord = time.time()
                     except:
                         print("Discord Bot error!")
+            
+            if time.time() - last_lora >= LORA_DELAY and lora.state == "RX":
+                try:
+                    lora.send("{0} {1}".format(data["gps_x"], data["gps_y"]))
+                    last_lora = time.time()
+                except:
+                    print("LoRa error!")
 
 
 
