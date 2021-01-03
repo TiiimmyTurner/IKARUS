@@ -13,7 +13,7 @@ document.querySelector("#backside").addEventListener("click", () => {
 
 
 function spawnChart(ids) {
-
+    var control = control_pressed
     // db.each(`SELECT name FROM sqlite_master WHERE type='table' AND name = '${data.launch}'`, function (err, row) {
     // }, (err, count)=>{
     //     if (count == 0){
@@ -22,7 +22,6 @@ function spawnChart(ids) {
     // });
 
     return () => {
-
         var raw = {};
         ids.map(id => {
             raw[id] = [];
@@ -83,7 +82,7 @@ function spawnChart(ids) {
                         console.log("too few chunks!")
                     }
 
-                    else if (chunks.length < recordCount || control_pressed) {
+                    else if (chunks.length < recordCount || control) {
                         datapoints = chunks;
                     }
 
@@ -132,8 +131,8 @@ function spawnChart(ids) {
                                 if (datapoints.length > recordCount) {
                                     while (datapoints.length > recordCount) {
                                         var pop = datapoints.map((pt, i) => {
-                                            var spread = pt.vspread * pt.hspread
-                                            spread = pt.hspread
+                                            var spread = pt.vspread ** 2 + pt.hspread ** 2
+                                            // spread = pt.hspread
                                             return { chunk: pt, spread: spread, index: i }
                                         })
                                             .reduce((min, a) => (a.spread < min.spread && a.chunk.index != 0 && a.chunk.index != chunks.length - 1) || min.chunk.index == 0 || min.chunk.index == chunks.lenght - 1 ? a : min)
@@ -147,14 +146,14 @@ function spawnChart(ids) {
                                         // console.log(distances);
                                         // console.log("Datapoints:");
                                         // console.log(datapoints);
-                                        maxDistance = distances.length > 1 ? distances.reduce((max, a) => a.width > max.width ? a : max) : distances[0];
+                                        maxDistance = distances.length > 1 ? distances.reduce((max, a) => max.between.length == 0 ? a : a.width > max.width && a.between.length > 0 ? a : max) : distances[0];
                                         // console.log("maxDistance:");
                                         // console.log(maxDistance);
 
                                         if (maxDistance.between == []) {
                                             break
                                         }
-                                        middle = maxDistance.between.map(c => {
+                                        middle = maxDistance.between.length == 1 ? maxDistance.between[0] : maxDistance.between.map(c => {
                                             return { distanceToMiddle: Math.abs((maxDistance.right.time + maxDistance.left.time) / 2 - c.time), chunk: c }
                                         })
                                             .reduce((min, a) => a.distanceToMiddle < min.distanceToMiddle ? a : min)
@@ -202,7 +201,6 @@ function spawnChart(ids) {
 
 
             var ctx = document.getElementById("chart").getContext('2d');
-
             chart = new Chart(ctx, {
                 type: "line",
                 data: {
@@ -210,6 +208,7 @@ function spawnChart(ids) {
                     datasets: datasets
                 },
                 options: {
+                    maintainAspectRatio: false,
                     hover: {
                         mode: "nearest",
                         intersect: false
@@ -231,6 +230,8 @@ function spawnChart(ids) {
                     }
                 }
             });
+            
+
 
         });
     }
