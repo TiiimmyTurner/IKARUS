@@ -91,21 +91,20 @@ function update() {
         loaded.loaded = true
     }
 
-    //if (dataset["time"] == 0){return}
     rotations.x = dataset.rotation_x;
     rotations.y = dataset.rotation_y;
 
-    //Map
+    // Map
     if(!mapMouseDown && now.getTime() - lastMapPan >= mapUpdateDelay && isMapLoaded && dataset["gps_x"] != null && dataset["gps_x"] != null) {
         lastMapPan = now.getTime();
         updatePosition([dataset["gps_x"], dataset["gps_y"]]);
     }
 
-    //Commands for uplink   
+    // Commands for uplink   
     fs.appendFile('temporary/commands.txt', commands, (err) => { if (err) throw err; })
     commands = '';
 
-    //Videostream
+    // Videostream
     if (now.getTime() - lastStreamCheck >= checkStreamDelay) {
         lastStreamCheck = now.getTime();
 

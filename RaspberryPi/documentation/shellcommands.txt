@@ -2,8 +2,8 @@
 sudo apt install filezilla
 
 
-# python
 
+# python
 sudo pip3 install paho-mqtt
 sudo pip3 install adafruit-blinka
 sudo pip3 install adafruit-circuitpython-mpu6050
@@ -14,10 +14,12 @@ cd Adafruit_Python_BMP
 sudo python3 setup.py
 
 
-# LoRa (SX1272)
 
+# LoRa (SX1272)
 sudo raspi-config nonint do_spi 0
 sudo apt-get install python-dev python3-dev
+
+
 
 # pip
 sudo pip install pip --upgrade
@@ -33,13 +35,19 @@ sudo apt-get install python-spidev python3-spidev
 sudo apt-get install git
 sudo git clone https://github.com/rpsreal/pySX127x
 
+
+
 # cv2
 sudo pip3 install opencv-python
 sudo apt-get install libcblas-dev libhdf5-dev libhdf5-serial-dev libatlas-base-dev libjasper-dev libqtgui4 libqt4-test
 sudo apt-get install libatlas-base-dev
 
+
+
 # discord
 python3 -m pip install -U discord.py
+
+
 
 # surfstick
 sudo apt-get install -y usb-modeswitch
@@ -47,3 +55,21 @@ sudo apt-get install usb-modeswitch
 sudo apt-get install ppp wvdial
 sudo wvdialconf /etc/wvdial.conf
 sudo nano /etc/wvdial.conf
+
+
+
+# autostart
+mkdir /home/pi/.config/autostart
+nano /home/pi/.config/autostart/IKARUS.desktop
+
+[Desktop Entry]
+Type=Application
+Name=IKARUS
+Exec=/usr/bin/python3 /path/to/IKARUS.py
+
+# seek'n'kill
+sudo ps -ax | grep python
+sudo kill <PID>
+
+# entfernen
+rm /home/pi/.config/autostart/clock.desktop

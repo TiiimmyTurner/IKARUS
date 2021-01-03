@@ -3,6 +3,8 @@ var mapUpdateDelay = 1000;
 var mapPanDelayAfterDrag = 200;
 var updateDelay = 20;
 var checkStreamDelay = 30000
+var recordCount = 40;
+var chunkTime = 60;
 const RASPBERRYPI = "192.168.0.115";
 const VIDEOSTREAM = `http://${RASPBERRYPI}:8000/stream.mjpg`
 
@@ -14,6 +16,7 @@ var mapMouseDown = false;
 var commands = "Dew it!";
 var lastMapPan = 0;
 var lastStreamCheck = 0;
+var control_pressed = false;
 
 var parameterEncoding = {
 
@@ -38,6 +41,7 @@ var parameterEncoding = {
     "altitude": 0
 
 }
+
 function getParameterDescription(id) {
     var name;
     if (id.includes("inside")) {

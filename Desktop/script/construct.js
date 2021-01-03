@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+// import $ from "jquery";
 
 function flip(ids) {
     return () => {
@@ -26,6 +27,12 @@ function flip(ids) {
     
 }
 
+class CMD extends React.Component {
+    render() {
+
+    }
+}
+
 function getValue(options={ id, unit, description, decimals, factor, get }) {
     options.factor = options.factor ? options.factor : 1;
     return {
@@ -34,7 +41,11 @@ function getValue(options={ id, unit, description, decimals, factor, get }) {
         get: () => {
             if (options.get) {
                 try {
-                    return options.get();
+                    var result = options.get();
+                    if (!result) {
+                        return ""
+                    }
+                    return result
                 }
                 catch (e) {
                     return "";   
@@ -108,6 +119,7 @@ class Row extends React.Component {
 }
 
 
+
 class List extends React.Component {
     
     render() {
@@ -141,7 +153,6 @@ class Cam extends React.Component {
 
 
 
-
 var time = {
     rows: [
         {
@@ -166,6 +177,9 @@ var time = {
             description: "Delay",
             values: [
                 getValue({ id: "delay", get: () => {
+                    if (!dataset.time) {
+                        return null;
+                    }
                     return (new Date()).getTime() - dataset.time * 1000 + " ms"
                 }})
             ]
@@ -258,7 +272,18 @@ ReactDOM.render(page, document.getElementById("root"))
 
 reload();
 
-/*,*/
+document.addEventListener('keydown', function(event) {
+    if(event.key == "Control") {
+        control_pressed = true;
+    }
+});
+
+document.addEventListener('keyup', function(event) {
+    if(event.key == "Control") {
+        control_pressed = false;
+    }
+});
+
 var links = [
     "lib/js/three.js",
     "lib/js/MTLLoader.js",

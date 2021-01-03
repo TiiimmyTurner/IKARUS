@@ -60,33 +60,35 @@ new Promise((resolve) => {
 
 
 
-/*
-var mqtt = require('mqtt');
+
+// var mqtt = require('mqtt');
 
 
-var client = mqtt.connect('mqtt://broker.192.168.0.115');
+// // var client = mqtt.connect('mqtt://test.mosquitto.org');
  
-client.on('connect', function () {
-  client.subscribe('data', function (err) {
-  });
-  // console.log("connected");
+// var client  = mqtt.connect("mqtt://192.168.0.115", {clientId: 'bgtestnodejs', protocolId: 'MQIsdp', protocolVersion: 3, connectTimeout:1000, debug:true})
 
-});
+// client.on('connect', function () {
+//   client.subscribe('/data', function (err) {
+//   });
+//   console.log("connected");
+
+// });
  
-client.on('message', function (topic, message) {
+// client.on('message', function (topic, message) {
 
-    var lines = data.toString().split("\n");
-    var data = JSON.parse(lines[0]);
+//     var lines = data.toString().split("\n");
+//     var data = JSON.parse(lines[0]);
     
-    var calc = calculation(x["temperature_outside"], x["pressure_outside"]);
-    for (id in calc){
-        x[id] = calc[id];
-    }
-    dataset = data
+//     var calc = calculation(x["temperature_outside"], x["pressure_outside"]);
+//     for (id in calc){
+//         x[id] = calc[id];
+//     }
+//     // dataset = data
 
-    // log(data);
+//     // log(data);
 
-})*/
+// })
 
 
 var sqlite = require('sqlite3').verbose();
@@ -115,7 +117,7 @@ function createTable(data) {
                 columns.push(entry);
             }
         });
-        
+
         db.run(`CREATE TABLE IF NOT EXISTS ${data.launch} (${commafy(columns)})`);
 
     });    

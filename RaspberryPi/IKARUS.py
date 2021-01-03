@@ -1,4 +1,4 @@
-import sys, board, busio, time, json, math, copy
+import sys, board, busio, time, json, math, copy, os
 from typing import Dict
 import paho.mqtt.client as mqtt
 import RPi.GPIO as GPIO
@@ -18,14 +18,23 @@ import sqlite3
 
 
 
-if len(sys.argv) != 2 or sys.argv[1] == "":
+if len(sys.argv) > 2:
     sys.exit(0)
+
+elif len(sys.argv) == 2 and sys.argv[1] != "":
+    LAUNCH = sys.argv[1]
+
+else:
+    file = open(os.path.join(os.path.dirname(__file__), "launch.txt"))
+    LAUNCH = file.read()
+    file.close()
+    if LAUNCH == "":
+        sys.exit(0)
+
 
 
 
 # ---------- Parameters ----------
-
-LAUNCH = sys.argv[1]
 
 DATA_DELAY = 1
 DISCORD_DELAY = 5
@@ -44,6 +53,7 @@ DISCORD_BOT_TOKEN = "".join([chr(byte) for byte in [78, 122, 99, 121, 77, 68, 10
 
 # ---------- Setup ----------
 
+print("launch: {}".format(LAUNCH))
 
 # Peripherals
 
@@ -226,3 +236,4 @@ finally:
     lora.shutdown()
     camera.stop_recording(splitter_port=1)
     camera.stop_recording(splitter_port=2)
+    os._exit(1)

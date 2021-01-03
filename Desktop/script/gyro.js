@@ -1,8 +1,8 @@
 i = 0;
 var rotations = {
-    "x": 0,
-    "y": 0,
-    "z": 0
+    "x" : null,
+    "y" : null,
+    "z" : null
 
 }
 
