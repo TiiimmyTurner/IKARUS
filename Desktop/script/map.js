@@ -38,7 +38,7 @@ function initMap() {
 
 function updatePosition(_coords){
     map.panTo(formalize(_coords));  
-
+    
     marker.setPosition(formalize(_coords));
 }
 

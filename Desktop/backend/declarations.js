@@ -2,11 +2,11 @@
 var mapUpdateDelay = 1000;
 var mapPanDelayAfterDrag = 200;
 var updateDelay = 20;
-var checkStreamDelay = 30000
+var checkServerDelay = 15000
 var recordCount = 40;
 var chunkTime = 60;
 const RASPBERRYPI = "192.168.0.115";
-const VIDEOSTREAM = `http://${RASPBERRYPI}:8000/stream.mjpg`
+const HTTPSERVER = `http://${RASPBERRYPI}:8000`
 
 // global variables
 var map;
@@ -15,7 +15,7 @@ var isMapLoaded = false;
 var mapMouseDown = false;
 var commands = "Dew it!";
 var lastMapPan = 0;
-var lastStreamCheck = 0;
+var lastServerCheck = 0;
 var control_pressed = false;
 
 var parameterEncoding = {
@@ -93,4 +93,5 @@ function reload(){};
 var loaded = {};
 var tables = [];
 var logblacklist = [ "rotation_z", "rotation_y", "rotation_x", "satellites", "launch" ];
-var videostream_active = false;
+var server_active = false;
+var datadownload_active = false

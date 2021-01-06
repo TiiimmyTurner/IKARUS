@@ -1,5 +1,6 @@
 const fs = require('fs');
 const { resolve } = require('path');
+const http = require("http")
 
 setInterval(update, updateDelay);
 
@@ -101,35 +102,37 @@ function update() {
     }
 
     // Commands for uplink   
-    fs.appendFile('temporary/commands.txt', commands, (err) => { if (err) throw err; })
-    commands = '';
+    // fs.appendFile('temporary/commands.txt', commands, (err) => { if (err) throw err; })
+    // commands = '';
 
-    // Videostream
-    if (now.getTime() - lastStreamCheck >= checkStreamDelay) {
-        lastStreamCheck = now.getTime();
+    // HTTP-Server
+    if (now.getTime() - lastServerCheck >= checkServerDelay && !server_active) {
+        lastServerCheck = now.getTime();
 
-        new Promise ( (resolve, reject) => {
-            fetch(VIDEOSTREAM).then((response, err) => {
-                if (!err) {
-                    if (response.ok) {
-                        videostream_active = true
-                        return;
-                    }            
-                }
-    
-                videostream_active = false
-                resolve();
-    
-            }).catch ( () => {
-    
-                videostream_active = false
-                resolve();
+        http.get(HTTPSERVER, res => {
+            server_active = true
+
+            if (!datadownload_active) {
+                datadownload_active = true
+                http.get(`${HTTPSERVER}/data`, res => {
+                    
+                    res.on('data', function (buf) {   
+                        handle_data(buf.toString())
+                    });
+                    
+                    res.on('end', function () {
+                        datadownload_active = false
+                        server_active = false
+                    });
+                })
+            }
+
+        })
+        .on('error', e => server_active = false);
             
-            })        
-        }).catch( err => {
-            videostream_active = false
-        });
+
     
     }
+
 
 }

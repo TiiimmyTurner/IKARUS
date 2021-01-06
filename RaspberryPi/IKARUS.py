@@ -7,7 +7,7 @@ import paho.mqtt.publish as publish
 import serial
 from picamera import PiCamera
 from classes.lora import Transceiver
-from classes.stream import Webstream
+from classes.webserver import Webserver
 import asyncio
 from threading import Thread
 from multiprocessing import Process
@@ -36,7 +36,7 @@ else:
 
 # ---------- Parameters ----------
 
-DATA_DELAY = 1
+DATA_DELAY = 0.5
 DISCORD_DELAY = 5
 LORA_DELAY = 60
 
@@ -61,20 +61,24 @@ print("launch: {}".format(LAUNCH))
 
 lora = Transceiver()
 
+# Webserver
+
+webserver = Webserver()
+
+address = ('', 8000)
+web_thread = Thread(target=webserver.start, args=(address,))
+web_thread.start()
+
 # Camera
 
 camera = PiCamera()
 camera.resolution = (620, 480)
 camera.framerate = 24
-output = Webstream()
 
-camera.start_recording(output, format='mjpeg', splitter_port=1)
+camera.start_recording(webserver.stream, format='mjpeg', splitter_port=1)
 camera.start_recording('video.h264', splitter_port=2, resize=(1280, 720))
 
-address = ('', 8000)
 
-webstream = Thread(target=output.stream, args=(address,))
-webstream.start()
 
 # GPS
 # -> https://learn.adafruit.com/adafruit-ultimate-gps/circuitpython-python-uart-usage
@@ -187,7 +191,7 @@ def updateAngle(gyr, acc, dt):
 # main loop
 
 begin = time.time()
-last_mqtt = time.time()
+last_data = time.time()
 last_discord = time.time()
 last_lora = time.time()
 
@@ -205,11 +209,12 @@ try:
         except:
             pass
 
-        if time.time() - last_mqtt >= DATA_DELAY:
+        if time.time() - last_data >= DATA_DELAY:
             gps.update()
             data = dataset.update()
             publish.single(MQTT_PATH, json.dumps(data), hostname=MQTT_SERVER)
-            last_mqtt = time.time()
+            webserver.data = dataset.getString()
+            last_data = time.time()
             log(data)
             
             if time.time() - last_discord >= DISCORD_DELAY and bot.ready:
@@ -233,6 +238,7 @@ except KeyboardInterrupt:
     pass
 
 finally:
+    print("end")
     lora.shutdown()
     camera.stop_recording(splitter_port=1)
     camera.stop_recording(splitter_port=2)

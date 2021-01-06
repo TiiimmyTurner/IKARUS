@@ -141,8 +141,8 @@ class List extends React.Component {
 
 class Cam extends React.Component {
     render() {
-        if (videostream_active){
-            return <img src={VIDEOSTREAM}/>
+        if (server_active){
+            return <img src={`${HTTPSERVER}/stream`}/>
         }
         
         else {

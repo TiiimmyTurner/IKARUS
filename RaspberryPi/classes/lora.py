@@ -90,7 +90,6 @@ class Transceiver(LoRa):
             self.send(CALLBACK)
 
     def on_tx_done(self):
-        print("TX done")
         self.clear_irq_flags(TxDone=1) # clear txdone IRQ flag
         
         self.set_dio_mapping([0] * 6)    
@@ -98,31 +97,31 @@ class Transceiver(LoRa):
         self.set_mode(MODE.RXCONT)
         self.state = "RX"
 
-    def on_cad_done(self):
-        print("\non_CadDone")
-        print(self.get_irq_flags())
+    # def on_cad_done(self):
+    #     print("\non_CadDone")
+    #     print(self.get_irq_flags())
 
-    def on_rx_timeout(self):
-        print("\non_RxTimeout")
-        print(self.get_irq_flags())
+    # def on_rx_timeout(self):
+    #     print("\non_RxTimeout")
+    #     print(self.get_irq_flags())
 
-    def on_valid_header(self):
-        print("\non_ValidHeader")
-        print(self.get_irq_flags())
+    # def on_valid_header(self):
+    #     print("\non_ValidHeader")
+    #     print(self.get_irq_flags())
 
-    def on_payload_crc_error(self):
-        print("\non_PayloadCrcError")
-        print(self.get_irq_flags())
+    # def on_payload_crc_error(self):
+    #     print("\non_PayloadCrcError")
+    #     print(self.get_irq_flags())
 
-    def on_fhss_change_channel(self):
-        print("\non_FhssChangeChannel")
-        print(self.get_irq_flags())
+    # def on_fhss_change_channel(self):
+    #     print("\non_FhssChangeChannel")
+    #     print(self.get_irq_flags())
 
     def start(self):
         pass
     
     def send(self, message, wait = False):
-        print("sending:", message)
+        # print("sending:", message)
         self.state = "TX"
         payload = [255, 255, 0, 0] + [byte for byte in (message).encode("utf-8")] + [0]
         

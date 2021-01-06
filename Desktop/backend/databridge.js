@@ -1,98 +1,61 @@
 //!!! Für Livestream muss Programm neu gestartet, nicht nur neu geladen werden!!!
 
-var { spawn, exec } = require('child_process');
 
-//Python-Pfad
-new Promise((resolve) => {
-    exec('python -c "import sys; print(sys.executable)"', function (error, stdout, stderr) {
-        if (error) {
-            console.error(error, stderr)
+function handle_data(string) {
+    // var data = JSON.parse(data);
+    var data = {}
+    var chunks = string.split("\n")
+    chunks.forEach(chunk => {
+        var type = ""
+        var id = ""
+        var value = ""
+        var arg = 0
+        for (chr of chunk) {
+            if (chr == ",") {
+                arg += 1
+            }
+            else {
+                switch (arg) {
+                    case 0:
+                        type += chr
+                        break
+                    case 1:
+                        id += chr
+                        break
+                    case 2:
+                        value += chr
+                        break
+                }
+            }
         }
-        path = stdout.replaceAll("\\", "/");
-        resolve(path.slice(0, path.length - 2))
-    });
-}).then((python) => {
-
-
-    //downlink
-    var downlink = spawn(python, ['backend/downlink.py']);
-
-    downlink.stdout.on('data', (data) => {
-        var lines = data.toString().split("\n");
-        var data = JSON.parse(lines[0]);
-        
-        var calc = calculation(data["temperature_outside"], data["pressure_outside"]);
-        for (id in calc){
-            data[id] = calc[id];
+        switch (type) {
+            case "FLOAT":
+                value = Number(value)
+                break
+            case "BOOLEAN":
+                value = value == "True"
+                break
         }
-        dataset = data
-        
-        log(data)
+        data[id] = value
 
-    });
-
-    downlink.on("exit", function (code, signal) {
-        console.error("Downlink has stopped with code " + code.toString() + ".");
-    });
-    downlink.stderr.on('data', (data) => {
-        console.error("An error occured with downlink:\n" + data.toString());
-    });
-
-
-    //uplink
-    var uplink = spawn(python, ['backend/uplink.py']);
-
-    //uplink.unref();
-
-    uplink.stdout.on('data', (msg) => {
-    });
-
-    uplink.on("exit", function (code, signal) {
-        console.error("Uplink has stopped with code " + code.toString() + ".");
-    });
-    uplink.stderr.on('data', (data) => {
-        console.error("An error occured with uplink:\n" + data.toString());
-    });
-
-
-
-});
-
-
-
-
-// var mqtt = require('mqtt');
-
-
-// // var client = mqtt.connect('mqtt://test.mosquitto.org');
- 
-// var client  = mqtt.connect("mqtt://192.168.0.115", {clientId: 'bgtestnodejs', protocolId: 'MQIsdp', protocolVersion: 3, connectTimeout:1000, debug:true})
-
-// client.on('connect', function () {
-//   client.subscribe('/data', function (err) {
-//   });
-//   console.log("connected");
-
-// });
- 
-// client.on('message', function (topic, message) {
-
-//     var lines = data.toString().split("\n");
-//     var data = JSON.parse(lines[0]);
+    })
     
-//     var calc = calculation(x["temperature_outside"], x["pressure_outside"]);
-//     for (id in calc){
-//         x[id] = calc[id];
-//     }
-//     // dataset = data
+    var calc = calculation(data["temperature_outside"], data["pressure_outside"]);
+    for (id in calc){
+        data[id] = calc[id];
+    }
+    dataset = data
+    
+    log(data)
+}
 
-//     // log(data);
 
-// })
+
+
 
 
 var sqlite = require('sqlite3').verbose();
-db = new sqlite.Database('data.db');
+db = new sqlite.Database('./log/data.db');
 
 function createTable(data) {
     db.serialize(function () {

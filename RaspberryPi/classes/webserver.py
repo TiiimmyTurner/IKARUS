@@ -34,26 +34,25 @@ class StreamingOutput(object):
 
 
 
-class Webstream:
+class Webserver:
 
     def __init__(self):
-        self.output = StreamingOutput()
+        self.stream = StreamingOutput()
+        self.data = ""
+    
 
-    def write(self, buf):
-        self.output.write(buf)
-
-    def stream(self, address):
+    def start(self, address):
         global server
-        output = self.output
+        webserver = self
 
         class StreamingHandler(server.BaseHTTPRequestHandler):
             def do_GET(self):
                 if self.path == '/':
                     self.send_response(301)
-                    self.send_header('Location', '/stream.mjpg')
+                    self.send_header('Location', '/stream')
                     self.end_headers()
 
-                elif self.path == '/stream.mjpg':
+                elif self.path == '/stream':
                     self.send_response(200)
                     self.send_header('Age', 0)
                     self.send_header('Cache-Control', 'no-cache, private')
@@ -62,9 +61,9 @@ class Webstream:
                     self.end_headers()
                     try:
                         while True:
-                            with output.condition:
-                                output.condition.wait()
-                                frame = output.frame
+                            with webserver.stream.condition:
+                                webserver.stream.condition.wait()
+                                frame = webserver.stream.frame
                             self.wfile.write(b'--FRAME\r\n')
                             self.send_header('Content-Type', 'image/jpeg')
                             self.send_header('Content-Length', len(frame))
@@ -72,9 +71,30 @@ class Webstream:
                             self.wfile.write(frame)
                             self.wfile.write(b'\r\n')
                     except Exception as e:
-                        logging.warning(
-                            'Removed streaming client %s: %s',
-                            self.client_address, str(e))
+                        pass
+                        # logging.warning(
+                        #     'Removed streaming client %s: %s',
+                        #     self.client_address, str(e))
+                
+                elif self.path == "/data":
+
+                    self.send_response(200)
+                    # self.send_header('Age', 0)
+                    # self.send_header('Cache-Control', 'no-cache, private')
+                    # self.send_header('Pragma', 'no-cache')
+                    self.end_headers()
+                    try:
+                        while True:
+                            if webserver.data:
+                                bytes = webserver.data.encode('utf-8')
+                                self.wfile.write(bytes)
+                                webserver.data = None
+                            
+
+
+                    except:
+                        pass
+
                 else:
                     self.send_error(404)
                     self.end_headers()

@@ -28,6 +28,7 @@ class Value:
 class Dataset:
 
     def __init__(self, preset):
+        self.dataset = {}
         self.keys = [x for x in preset]
         self.values = {}
         self.parameters = {}
@@ -39,15 +40,22 @@ class Dataset:
 
     def update(self):
         
-        dataset = {}
-
         for name in self.values:
-            dataset[name] = self.values[name].get()
+            self.dataset[name] = self.values[name].get()
         
         for name in self.parameters:
-            dataset[name] = self.parameters[name]
+            self.dataset[name] = self.parameters[name]
 
-        return dataset
+        return self.dataset
+
+    def getString(self):
+        types = self.types()
+        string = ""
+
+        for key in self.dataset:
+            string += "{0},{1},{2}\n".format(types[key], key, self.dataset[key])
+        return string[:-1]
+        
 
     def types(self):
         types = {}
