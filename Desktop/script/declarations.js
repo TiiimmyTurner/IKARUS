@@ -11,36 +11,12 @@ const HTTPSERVER = `http://${RASPBERRYPI}:8000`
 // global variables
 var map;
 var marker;
-var isMapLoaded = false;
 var mapMouseDown = false;
 var commands = "Dew it!";
 var lastMapPan = 0;
 var lastServerCheck = 0;
-var control_pressed = false;
+var keys = {};
 
-var parameterEncoding = {
-
-    "temperature_inside": "",
-    "temperature_outside": 20.234,
-    "pressure_inside": 0,
-    "pressure_outside": 1013,
-    "humidity_inside": 25.345,
-    "humidity_outside": 0,
-    "rotation_x": 1,
-    "rotation_y": 1,
-    "rotation_z": 4,
-    "gps_x": 48.001,
-    "gps_y": 11,
-    "time": 0,
-    "launch": 0,
-    "acceleration": 0,
-    "thrust": 0, 
-    "volume_balloon": 0,
-    "relative_volume": 0, 
-    "relative_radius": 0, 
-    "altitude": 0
-
-}
 
 function getParameterDescription(id) {
     var name;
@@ -74,24 +50,18 @@ function getParameterDescription(id) {
     }
     return name;
 }
-dataset = {}
+var dataset = {}
 
 var win = require('electron').remote.BrowserWindow.getFocusedWindow();
 var chart;
-function commafy(arr){
-    var str = "";
-    if(!Array.isArray(arr)) arr = Object.keys(arr);
-    for (var i = 0; i < arr.length; i++){
-        str += arr[i];
-        if (i < arr.length - 1){
-            str += ", ";
-        }
-    }
-    return str;
-}
+
 function reload(){};
 var loaded = {};
 var tables = [];
 var logblacklist = [ "rotation_z", "rotation_y", "rotation_x", "satellites", "launch" ];
-var server_active = false;
-var datadownload_active = false
+var connected = false
+var receiving = false
+var nodata = true
+var latest_position = null
+
+

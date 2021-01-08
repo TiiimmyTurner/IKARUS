@@ -127,8 +127,8 @@ dataset = Dataset({
     "rotation_x" : Value(lambda: -orientation[0]),
     "rotation_y" : Value(lambda: orientation[1]),
     "rotation_z" : Value(lambda: mpu6050.gyro[2]),
-    "gps_x": Value(lambda s : s.latitude if s.has_fix else 0, gps),
-    "gps_y": Value(lambda s : s.longitude if s.has_fix else 0, gps),
+    "latitude": Value(lambda s : s.latitude if s.has_fix else 0, gps),
+    "longitude": Value(lambda s : s.longitude if s.has_fix else 0, gps),
     "time": Value(time.time),
     "satellites": Value(lambda s : s.satellites, gps),
     "gps_fix": Value(lambda s : s.has_fix, gps, "BOOLEAN"),
@@ -220,14 +220,14 @@ try:
             if time.time() - last_discord >= DISCORD_DELAY and bot.ready:
                 if not bot.sending:
                     try:
-                        bot.send("{0} {1}".format(data["gps_x"], data["gps_y"]))
+                        bot.send("{0} {1}".format(data["latitude"], data["longitude"]))
                         last_discord = time.time()
                     except:
                         print("Discord Bot error!")
             
             if time.time() - last_lora >= LORA_DELAY and lora.state == "RX":
                 try:
-                    lora.send("{0} {1}".format(data["gps_x"], data["gps_y"]))
+                    lora.send("{0} {1}".format(data["latitude"], data["longitude"]))
                     last_lora = time.time()
                 except:
                     print("LoRa error!")

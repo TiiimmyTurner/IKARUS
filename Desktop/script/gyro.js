@@ -1,8 +1,8 @@
 i = 0;
 var rotations = {
-    "x" : null,
-    "y" : null,
-    "z" : null
+    "x": null,
+    "y": null,
+    "z": null
 
 }
 
@@ -53,7 +53,9 @@ function render() {
     renderer.render(scene, camera);
 
 }
-render();
+
+render()
+
 
 
 
@@ -68,12 +70,10 @@ new Promise((resolve) => {
 }).then((materials) => {
     materials.preload(); //optional
     OBJLoader.setMaterials(materials);
-    OBJLoader.load('https://raw.githubusercontent.com/TiiimmyTurner/IKARUS/master/Desktop/resources/blender-files/sonde.obj',
-        (object) => {
-            cube = object;
-            scene.add(object);
-        })
-}).then( _ => {
-    loaded.gyro = true
+    OBJLoader.load('https://raw.githubusercontent.com/TiiimmyTurner/IKARUS/master/Desktop/resources/blender-files/sonde.obj', object => {
+        cube = object;
+        scene.add(object);
+        loaded.gyro = true
+    })
 })
 

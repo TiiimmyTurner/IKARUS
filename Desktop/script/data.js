@@ -13,7 +13,7 @@ document.querySelector("#backside").addEventListener("click", () => {
 
 
 function spawnChart(ids) {
-    var control = control_pressed
+    var ctrl = keys.ctrl
     // db.each(`SELECT name FROM sqlite_master WHERE type='table' AND name = '${data.launch}'`, function (err, row) {
     // }, (err, count)=>{
     //     if (count == 0){
@@ -27,7 +27,7 @@ function spawnChart(ids) {
             raw[id] = [];
         })
 
-        var columns = commafy(ids);
+        var columns = ids.toString();
         db.each(`SELECT time, ${columns} FROM ${dataset.launch} ORDER BY time ASC`, function (err, row) {
 
             ids.map(id => {
@@ -82,7 +82,7 @@ function spawnChart(ids) {
                         console.log("too few chunks!")
                     }
 
-                    else if (chunks.length < recordCount || control) {
+                    else if (chunks.length < recordCount || ctrl) {
                         datapoints = chunks;
                     }
 

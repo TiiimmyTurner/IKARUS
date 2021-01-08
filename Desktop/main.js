@@ -40,15 +40,17 @@ function createWindow() {
   mainwin.hide();
 
   mainwin.loadFile('main.html');
-
+  mainwin.started = false
   mainwin.start = () => {
-
+    
     loadingwin.on("close", () => {
       mainwin.maximize();
+      
       // mainwin.webContents.openDevTools();
     })
 
     loadingwin.close();
+    mainwin.started = true
   }
 
   // mainwin.start();

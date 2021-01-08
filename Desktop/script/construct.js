@@ -51,7 +51,7 @@ function getValue(options={ id, unit, description, decimals, factor, get }) {
                     return "";   
                 }
             }
-            if (!global.dataset[options.id]) {
+            if (!global.dataset[options.id] || global.nodata) {
                 return ""
             }
             return (global.dataset[options.id] * options.factor).toFixed(options.decimals) + (options.unit ? " " + options.unit : "")
@@ -141,12 +141,12 @@ class List extends React.Component {
 
 class Cam extends React.Component {
     render() {
-        if (server_active){
+        if (connected){
             return <img src={`${HTTPSERVER}/stream`}/>
         }
         
         else {
-            return <div/>
+            return <div style={{backgroundColor: "#303136", borderRadius: "8px", width: "100%", height: "100%"}}/>
         }
     }
 }
@@ -165,6 +165,9 @@ var time = {
                     return time.toISOString().substr(11, 8) 
                 }}),
                 getValue({ id: "board_time", description: "Board:", get: () => {
+                    if (!dataset.time || nodata) {
+                        return null
+                    }
                     var time = new Date();
                     var board = dataset["time"] * 1000 - time.getTimezoneOffset() * 60 * 1000;
                     time.setTime(board)
@@ -274,13 +277,13 @@ reload();
 
 document.addEventListener('keydown', function(event) {
     if(event.key == "Control") {
-        control_pressed = true;
+        keys.ctrl = true;
     }
 });
 
 document.addEventListener('keyup', function(event) {
     if(event.key == "Control") {
-        control_pressed = false;
+        keys.ctrl = false;
     }
 });
 
@@ -288,7 +291,7 @@ var links = [
     "lib/js/three.js",
     "lib/js/MTLLoader.js",
     "lib/js/OBJLoader.js",
-    "backend/databridge.js",
+    "script/datahandler.js",
 
     "script/map.js",
     "script/gyro.js",

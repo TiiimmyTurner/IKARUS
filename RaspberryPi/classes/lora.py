@@ -8,6 +8,8 @@ from SX127x.board_config import BOARD
 
 # --- constants ---
 
+MAX_BYTES = 15
+
 # callback request message key
 REQ = "INF"
 
@@ -120,9 +122,13 @@ class Transceiver(LoRa):
     def start(self):
         pass
     
+    
+
     def send(self, message, wait = False):
-        # print("sending:", message)
         self.state = "TX"
+        if len(message) > MAX_BYTES - 5:
+            pass
+        # print("sending:", message)
         payload = [255, 255, 0, 0] + [byte for byte in (message).encode("utf-8")] + [0]
         
         self.set_dio_mapping([1] + [0] * 5)

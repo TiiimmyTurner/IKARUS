@@ -1,44 +1,38 @@
-function formalize(_coordinates){
+function formalize(latitude, longitude) {
 
-    return new google.maps.LatLng(_coordinates[0], _coordinates[1]);
+    return new google.maps.LatLng(latitude, longitude);
 
 }
 
 
 function initMap() {
-    new Promise( (resolve)=>{
-        var options = {
-            center: formalize([0, 0]),
-            zoom: 15
-        }
 
-        map = new google.maps.Map(
-            document.querySelector("#map > *"),
-            options
-        );
-
-        marker = new google.maps.Marker({
-            position: formalize([0, 0]),
-            map: map
-        });
-        map.addListener("mousedown", () => {
-            mapMouseDown = true;
-        })
-        map.addListener("mouseup", () => {
-            mapMouseDown = false;
-            lastMapPan =  (new Date()).getTime() - (mapUpdateDelay - mapPanDelayAfterDrag);
-        })
-        resolve();
+    var options = {
+        center: formalize(0, 0),
+        zoom: 2
     }
-    ).then(()=>{
-        loaded.map = true;
-        isMapLoaded = true;
-    });
+
+    map = new google.maps.Map(
+        document.querySelector("#map > *"),
+        options
+    );
+
+
+    map.addListener("mousedown", () => {
+        mapMouseDown = true;
+    })
+    map.addListener("mouseup", () => {
+        mapMouseDown = false;
+        lastMapPan = (new Date()).getTime() - (mapUpdateDelay - mapPanDelayAfterDrag);
+    })
+
+    loaded.map = true;
+
 }
 
-function updatePosition(_coords){
-    map.panTo(formalize(_coords));  
-    
-    marker.setPosition(formalize(_coords));
+function updatePosition(latitude, longitude) {
+    map.panTo(formalize(latitude, longitude));
+
+    marker.setPosition(formalize(latitude, longitude));
 }
 

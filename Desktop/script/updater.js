@@ -4,40 +4,7 @@ const http = require("http")
 
 setInterval(update, updateDelay);
 
-function calculation(temperature, pressure) {
-    R = 8.31446261815324;
-    g = 9.81;
 
-    //initial conditions
-    const height0 = 300;
-    const v0 = 905;
-    const temperature0 = 20;
-    const mass_balloon = 0.1;
-    const mass_probe = 0.3;
-
-    const pressure0 = 1013.25;
-    var mass_gas = 4.002602 * pressure0 * v0 / R / (temperature0 + 273.15) / 1000;
-    var v = v0 * (temperature + 273.15) * pressure0 / (temperature0 + 273.15) / pressure;
-    var mass_environment = 28.949 * pressure * v / R / (temperature + 273.15) / 1000;
-    var mass = mass_balloon + mass_probe + mass_gas;
-
-    var acceleration = (g * mass_environment - g * mass) / mass;
-    var thrust = mass_environment - mass_gas;
-    var relative_volume = v / v0;
-    var relative_radius = Math.pow(relative_volume, 1 / 3);
-    var altitude = (temperature + 273.15) / 0.0065 * (Math.pow(pressure0 / pressure, 1 / 5.257) - 1);
-
-
-    return {
-        "acceleration": acceleration,
-        "thrust": thrust, 
-        "volume_balloon": v,
-        "relative_volume": relative_volume, 
-        "relative_radius": relative_radius, 
-        "altitude": altitude
-    };
-
-}
 
 
 
@@ -84,55 +51,89 @@ function adaptFont() {
 }
 
 function update() {
+    if (!(loaded.react && loaded.map && loaded.gyro && loaded.sql)) {
+        return
+    }
     now = new Date();
     reload();
     adaptFont();
-    if (!loaded.loaded && loaded.react && loaded.map && loaded.gyro) {
-        win.start();
-        loaded.loaded = true
+
+    // HTTP-Server
+    if (!connected) {
+        if (now.getTime() - lastServerCheck >= checkServerDelay) {
+            lastServerCheck = now.getTime();
+
+            http.get(HTTPSERVER, res => {
+                connected = true
+
+                if (!receiving) {
+                    receiving = true
+                    http.get(`${HTTPSERVER}/data`, res => {
+
+                        res.on('data', function (buf) {
+                            handle_data(buf.toString())
+                        });
+
+                        res.on('end', function () {
+                            receiving = false
+                            connected = false
+                            nodata = true
+                        });
+                    })
+                }
+
+            })
+                .on('error', e => connected = false);
+        }
     }
 
-    rotations.x = dataset.rotation_x;
-    rotations.y = dataset.rotation_y;
 
     // Map
-    if(!mapMouseDown && now.getTime() - lastMapPan >= mapUpdateDelay && isMapLoaded && dataset["gps_x"] != null && dataset["gps_x"] != null) {
-        lastMapPan = now.getTime();
-        updatePosition([dataset["gps_x"], dataset["gps_y"]]);
+    if (latest_position) {
+
+        if (!marker) {
+            marker = new google.maps.Marker({
+                position: formalize(latest_position.latitude, latest_position.longitude),
+                map: map
+            });
+            map.setZoom(10)
+        }
+
+
+        if (!mapMouseDown && now.getTime() - lastMapPan >= mapUpdateDelay) {
+            lastMapPan = now.getTime();
+            updatePosition(latest_position.latitude, latest_position.longitude);
+        }
     }
+    else {
+        if (marker) {
+            marker.setMap(null)
+        }
+        marker = null
+        map.panTo({lat: 0, lng: 0})
+        map.setZoom(2)
+    }
+
+    if (!nodata) {
+        rotations.x = dataset.rotation_x;
+        rotations.y = dataset.rotation_y;
+    }
+
+
+
 
     // Commands for uplink   
     // fs.appendFile('temporary/commands.txt', commands, (err) => { if (err) throw err; })
     // commands = '';
 
-    // HTTP-Server
-    if (now.getTime() - lastServerCheck >= checkServerDelay && !server_active) {
-        lastServerCheck = now.getTime();
 
-        http.get(HTTPSERVER, res => {
-            server_active = true
 
-            if (!datadownload_active) {
-                datadownload_active = true
-                http.get(`${HTTPSERVER}/data`, res => {
-                    
-                    res.on('data', function (buf) {   
-                        handle_data(buf.toString())
-                    });
-                    
-                    res.on('end', function () {
-                        datadownload_active = false
-                        server_active = false
-                    });
-                })
-            }
 
-        })
-        .on('error', e => server_active = false);
-            
-
+ 
     
-    }
 
+    if (!win.started) {
+        win.start();
+    }
 
 }
