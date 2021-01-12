@@ -21,6 +21,7 @@
 .text.list{
     font-family: whitney;
     color: white;
+    font-size: 80%;
 }
 
 .text.list.description {

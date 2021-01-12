@@ -37,6 +37,7 @@ let cube;
 
 function render() {
     requestAnimationFrame(render);
+
     if (cube) {
         cube.rotation.x = rotations["x"];
         cube.rotation.y = 3.14159 / 4 * 0;
@@ -45,16 +46,17 @@ function render() {
         cube.rotation.z = rotations["y"];
     }
 
-
-    camera.aspect = width() / height();
-    renderer.setSize(width(), height());
-    camera.updateProjectionMatrix();
-
     renderer.render(scene, camera);
 
 }
 
 render()
+
+window.addEventListener("resize", () => {
+    camera.aspect = width() / height();
+    renderer.setSize(width(), height());
+    camera.updateProjectionMatrix();
+})
 
 
 

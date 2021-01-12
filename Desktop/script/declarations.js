@@ -9,6 +9,7 @@ const RASPBERRYPI = "192.168.0.115";
 const HTTPSERVER = `http://${RASPBERRYPI}:8000`
 
 // global variables
+const jQuery = require("jquery")
 var map;
 var marker;
 var mapMouseDown = false;

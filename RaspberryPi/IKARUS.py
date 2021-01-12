@@ -50,7 +50,6 @@ DISCORD_BOT_TOKEN = "".join([chr(byte) for byte in [78, 122, 99, 121, 77, 68, 10
 
 
 
-
 # ---------- Setup ----------
 
 print("launch: {}".format(LAUNCH))
@@ -127,8 +126,8 @@ dataset = Dataset({
     "rotation_x" : Value(lambda: -orientation[0]),
     "rotation_y" : Value(lambda: orientation[1]),
     "rotation_z" : Value(lambda: mpu6050.gyro[2]),
-    "latitude": Value(lambda s : s.latitude if s.has_fix else 0, gps),
-    "longitude": Value(lambda s : s.longitude if s.has_fix else 0, gps),
+    "latitude": Value(lambda s : s.latitude if s.has_fix else None, gps),
+    "longitude": Value(lambda s : s.longitude if s.has_fix else None, gps),
     "time": Value(time.time),
     "satellites": Value(lambda s : s.satellites, gps),
     "gps_fix": Value(lambda s : s.has_fix, gps, "BOOLEAN"),
@@ -205,7 +204,7 @@ try:
         try:
             updateAngle(mpu6050.gyro, mpu6050.acceleration, dt)
         except KeyboardInterrupt:
-            sys.exit(0)
+            os._exit(1)
         except:
             pass
 

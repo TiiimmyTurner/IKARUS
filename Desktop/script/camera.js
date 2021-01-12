@@ -1,5 +1,5 @@
 
-function updateFrame() {
+window.addEventListener("resize", () => {
 
     var cam = document.querySelector("#cam > img");
     if (!cam) {
@@ -21,5 +21,4 @@ function updateFrame() {
         cam.setAttribute("height", "100%");
         cam.setAttribute("width", h / ratio);
     }
-}
-setInterval(() => { updateFrame(); }, 10);
+})

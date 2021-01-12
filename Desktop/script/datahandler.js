@@ -69,25 +69,43 @@ function handle_data(string) {
         var id = args[1]
         var value = args[2]
 
-        switch (type) {
-            case "FLOAT":
-                value = +value.toFixed(3)
-                break
-            case "BOOLEAN":
-                value = value == "True"
-                break
-        }
-        if (value = "None") {
+        if (value == "None") {
             value = null
         }
+
+        else {
+            switch (type) {
+                case "FLOAT":
+
+                    if (["latitude", "longitude"].includes(id)) {
+                        value = +value
+                    }
+                    else {
+                        value = +(+value).toFixed(4)
+                    }
+                    break
+
+                case "BOOLEAN":
+                    value = value == "True"
+                    break
+                
+                default:
+                    // stays string
+                    break
+            }            
+        }
+
+
+        
         data[id] = value
         types[id] = type
 
     })
 
-    var calc = calculation(data["temperature_outside"], data["pressure_outside"]);
+    var calc = calculation(data.temperature_outside, data.pressure_outside);
     for (id in calc) {
-        data[id] = calc[id];
+        data[id] = +calc[id].toFixed(4);
+        types[id] = "FLOAT"
     }
 
     if (dataset.latitude && dataset.longitude) {
@@ -98,7 +116,7 @@ function handle_data(string) {
             // handeled before
         }
         else {
-            if (tables[data.launch]) {
+            if (tables.filter(table => table.name == data.launch)[0]) {
                 db.each(`SELECT latitude, longitude, MAX(time) FROM ${data.launch}`, (_err, row) => {
                     latest_position = {latitude: row.latitude, longitude: row.longitude}
                 })
@@ -116,17 +134,17 @@ function handle_data(string) {
 
     // SQL logging
     new Promise(resolve => {
-        if (tables.includes(dataset.launch)) {
-            resolve()
+        var table;
+        if (table = tables.filter(table => table.name == dataset.launch)[0]) {
+            resolve(table)
         }
         else {
             createTable(dataset.launch, types).then(resolve)
         }
 
-    }).then(() => {
+    }).then((table) => {
 
-
-        let columns = tables[dataset.launch].columns
+        let columns = table.columns
         let columnNames = columns.map(column => column.name)
         var common = Object.keys(dataset).filter(id => columnNames.includes(id))
 
@@ -135,11 +153,11 @@ function handle_data(string) {
 
         common.forEach(id => {
 
-            if (dataset[id]) {
+            if (dataset[id] || dataset[id] == 0) {
 
                 into.push(id.toString());
 
-                if (columns[id].type == "TEXT") {
+                if (columns.filter(column => column.name == id)[0].type == "TEXT") {
                     values.push('"' + dataset[id] + '"');
                 }
                 else {
@@ -150,7 +168,7 @@ function handle_data(string) {
 
         })
 
-        db.run(`INSERT INTO ${dataset.launch} (${into.toString()}) VALUES (${values.toString()})`);
+        db.run(`INSERT INTO ${dataset.launch} (${into.toString()}) VALUES (${values.toString()})`, err => err ? console.log(err) : {});
 
     });
 
@@ -162,8 +180,9 @@ function handle_data(string) {
 function createTable(name, types) {
     return new Promise(resolve => {
         db.run(`CREATE TABLE IF NOT EXISTS ${name} (${Object.keys(types).map(id => `${id} ${types[id]}`).toString()})`, () => {
-            tables.push({ name: name, columns: Object.keys(types).map(id => ({ name: id, type: types[id] })) })
-            resolve();
+            table = { name: name, columns: Object.keys(types).map(id => ({ name: id, type: types[id] })) }
+            tables.push(table)
+            resolve(table);
         });
     })
 

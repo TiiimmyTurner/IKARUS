@@ -1,4 +1,4 @@
-import sys
+import sys, os
 
 class Value:
     def __init__(self, read, sensor = None, type = "FLOAT"):
@@ -15,9 +15,10 @@ class Value:
                 else:
                     return read()
             except KeyboardInterrupt:
-                sys.exit(0)
+                os._exit(1)
             except:
                 error() if sensor else ()
+                return None
         
         self.get = get
 

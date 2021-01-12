@@ -69,7 +69,7 @@ class Row extends React.Component {
         
         var descriptionPortion = this.props.descriptionPortion ? this.props.descriptionPortion : 0.2;
         var valuePortion = (1 - descriptionPortion) / this.props.values.length;
-        var description = <div style={{...itemStyle, width: descriptionPortion * 100 + "%", borderRight: "1px solid #bfbfbf"}}><a className="text list description">{this.props.description}</a></div>;
+        var description = <div className="textwrapper list description" style={{...itemStyle, width: descriptionPortion * 100 + "%", borderRight: "1px solid #bfbfbf"}}><a className="text list description">{this.props.description}</a></div>;
         var items = [];
         var ids = [];
 
@@ -91,10 +91,10 @@ class Row extends React.Component {
                     var tag = <a className="text list value description">{value.description}</a>;
                 }
 
-                items.push(<div style={{...itemStyle, width: descriptionWidth}} key={2 * index}><div style={{...itemStyle, width: "70%", height: "100%", justifyContent: "flex-end"}} >{tag}</div></div>);
+                items.push(<div className="textwrapper list value description" style={{...itemStyle, width: descriptionWidth}} key={2 * index}><div style={{...itemStyle, width: "70%", height: "100%", justifyContent: "flex-end"}} >{tag}</div></div>);
             }
 
-            items.push(<div style={{...itemStyle, width: valueWidth}} key={2 * index + 1}><a id={value.id} className="text list value">{value.get()}</a></div>)
+            items.push(<div className="textwrapper list value" style={{...itemStyle, width: valueWidth}} key={2 * index + 1}><a id={value.id} className="text list value">{value.get()}</a></div>)
             
 
         });
@@ -288,11 +288,13 @@ document.addEventListener('keyup', function(event) {
 });
 
 var links = [
+
     "lib/js/three.js",
     "lib/js/MTLLoader.js",
     "lib/js/OBJLoader.js",
     "script/datahandler.js",
 
+    "lib/js/flowtype.js",
     "script/map.js",
     "script/gyro.js",
     "script/updater.js",
@@ -304,16 +306,49 @@ var links = [
 
 (function loadScript(i){
     return () => {
-        if (!links[i]) return;
-        var script = document.createElement("script");
-        script.src = links[i];
-        document.head.appendChild(script);
-        script.onload = loadScript(i + 1);
-        //document.head.insertBefore(script, document.head.firstChild);
+        if (!links[i]){
+            loaded.react = true;
+        }
+        else {
+            var script = document.createElement("script");
+            script.src = links[i];
+            document.head.appendChild(script);
+            script.onload = loadScript(i + 1);            
+        }
+
     }
 
 
 
 })(0)();
+loaded.react = true
 
-loaded.react = true;
+// var loadScripts = () => Promise.resolve()
+
+
+// links.reduce((previous, link, index) => {
+//     let next = () => new Promise((resolve, reject) => {
+//         var script = document.createElement("script");
+//         script.src = link;
+//         document.head.appendChild(script);
+//         script.onload = resolve;
+//         script.onerror = reject
+//     })
+//     let old = previous
+//     previous = old.then(next)
+//     if (index == links.length - 1) {
+//         var load = loadScripts
+//         loadScripts = () => new Promise( resolve => {
+//             next = () => next().then(resolve)
+//             load()
+//         })
+//     }
+//     return next
+// }, loadScripts)
+
+// loadScripts().then(() => {
+//     loaded.react = true;
+// })
+
+
+

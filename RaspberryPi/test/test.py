@@ -1,1 +1,2 @@
-print("{0}".format(1))
+arr = []
+arr[2] = 4

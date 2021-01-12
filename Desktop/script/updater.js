@@ -2,8 +2,9 @@ const fs = require('fs');
 const { resolve } = require('path');
 const http = require("http")
 
-setInterval(update, updateDelay);
 
+setInterval(update, updateDelay);
+jQuery("body").flowtype({fontRatio: 100, minFont: 10})
 
 
 
@@ -56,7 +57,7 @@ function update() {
     }
     now = new Date();
     reload();
-    adaptFont();
+    //adaptFont();
 
     // HTTP-Server
     if (!connected) {
@@ -108,10 +109,10 @@ function update() {
     else {
         if (marker) {
             marker.setMap(null)
+            marker = null
+            map.panTo({lat: 0, lng: 0})
+            map.setZoom(2)
         }
-        marker = null
-        map.panTo({lat: 0, lng: 0})
-        map.setZoom(2)
     }
 
     if (!nodata) {
