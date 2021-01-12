@@ -48,11 +48,9 @@ class Transceiver(LoRa):
 
         self.setmode("RX")
         self.receiving = []
-        self.received = []
-        self.lost = []
         self.transmitting = []
         self.txn = 0
-
+        self.rxn = None
         assert(self.get_agc_auto_on() == 1)
 
     def config(self, range = "long"):
@@ -118,17 +116,32 @@ class Transceiver(LoRa):
 
         package = decode(payload)
         print(package)
-        self.receiving.append(package)
-        # toDo: different txns and different order
-        if package["number"] == package["quantity"] - 1 or len(self.receiving) == package["quantity"]:
-            if len(self.receiving) == package["quantity"]:
+
+        def finish(transmission):
+            if None in transmission:
+                self.onlost(transmission)
+            else:
                 message = ""
-                for p in self.receiving:
+                for p in transmission:
                     message += p["message"]
                 self.onmessage(message)
-            else:
-                self.onlost(self.receiving)
-            self.receiving = []
+
+        if not self.receiving:
+            self.receiving = [None] * package["quantity"]
+            self.rxn = package["txn"]
+        
+        if package["txn"] == self.rxn:
+            self.receiving[package["number"]] = package
+            if package["number"] == package["quantity"] - 1:
+                finish(self.receiving)
+                self.receiving = None
+                self.rxn = None
+        else:
+            finish(self.receiving)
+            self.receiving = [None] * package["quantity"]
+            self.rxn = package["txn"]
+            self.receiving[package["number"]] = package
+
 
 
 
@@ -146,7 +159,7 @@ class Transceiver(LoRa):
         print("received:", message)
 
     def onlost(self, package):
-        pass
+        print("lost:", self.rxn)
 
     def on_tx_done(self):
         self.clear_irq_flags(TxDone=1) # clear txdone IRQ flag

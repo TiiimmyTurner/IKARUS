@@ -1,2 +1,2 @@
-arr = []
-arr[2] = 4
+arr = [False, True, True]
+print(None in arr)
