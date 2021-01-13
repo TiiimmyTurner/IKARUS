@@ -64,7 +64,7 @@ lora = Transceiver()
 
 webserver = Webserver()
 
-address = ('', 8000)
+address = ('193.27.14.187', 8000)
 web_thread = Thread(target=webserver.start, args=(address,))
 web_thread.start()
 
@@ -219,14 +219,15 @@ try:
             if time.time() - last_discord >= DISCORD_DELAY and bot.ready:
                 if not bot.sending:
                     try:
-                        bot.send("{0} {1}".format(data["latitude"], data["longitude"]))
+                        bot.send("latitude: {0}, longitude: {1}".format(data["latitude"], data["longitude"]))
                         last_discord = time.time()
                     except:
                         print("Discord Bot error!")
             
             if time.time() - last_lora >= LORA_DELAY and lora.state == "RX":
                 try:
-                    lora.send("{0} {1}".format(data["latitude"], data["longitude"]))
+                    # lora.send("{0} {1}".format(data["latitude"], data["longitude"]))
+                    lora.send(dataset.getString())
                     last_lora = time.time()
                 except:
                     print("LoRa error!")

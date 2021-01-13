@@ -73,3 +73,6 @@ sudo kill <PID>
 
 # entfernen
 rm /home/pi/.config/autostart/clock.desktop
+
+# windscribe
+# https://windscribe.com/guides/linux#how-to

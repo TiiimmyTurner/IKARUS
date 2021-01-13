@@ -1,12 +1,25 @@
 const fs = require('fs');
 const { resolve } = require('path');
 const http = require("http")
+const SerialPort = require("serialport")
+const usb = require("usb")
 
 
 setInterval(update, updateDelay);
-jQuery("body").flowtype({fontRatio: 100, minFont: 10})
+jQuery("body").flowtype({ fontRatio: 100, minFont: 10 })
 
 
+// port = new SerialPort();
+// port.write("some data");
+// port.on("data", (data) => {
+//     console.log(data);
+// });
+
+SerialPort.list((err, ports) => {
+    ports.forEach((port) => {
+        console.log(port.comName);
+    });
+});
 
 
 //responsive font-size
@@ -21,7 +34,7 @@ function adaptFont() {
             element.setAttribute("style", "font-size: " + (element.style.fontSize - 1).toString() + "px");
         }
         
-
+ 
         */
         element.setAttribute("style", "font-size: " +
             Math.min(
@@ -110,7 +123,7 @@ function update() {
         if (marker) {
             marker.setMap(null)
             marker = null
-            map.panTo({lat: 0, lng: 0})
+            map.panTo({ lat: 0, lng: 0 })
             map.setZoom(2)
         }
     }
@@ -130,8 +143,8 @@ function update() {
 
 
 
- 
-    
+
+
 
     if (!win.started) {
         win.start();
