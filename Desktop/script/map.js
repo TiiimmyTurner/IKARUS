@@ -8,7 +8,7 @@ function formalize(latitude, longitude) {
 function initMap() {
 
     var options = {
-        center: formalize(0, 0),
+        center: { lat: 0, lng: 0 },
         zoom: 2
     }
 
@@ -31,8 +31,8 @@ function initMap() {
 }
 
 function updatePosition(latitude, longitude) {
-    map.panTo(formalize(latitude, longitude));
+    map.panTo({ lat: latitude, lng: longitude });
 
-    marker.setPosition(formalize(latitude, longitude));
+    marker.setPosition({ lat: latitude, lng: longitude });
 }
 

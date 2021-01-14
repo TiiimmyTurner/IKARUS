@@ -9,9 +9,10 @@ sudo pip3 install adafruit-blinka
 sudo pip3 install adafruit-circuitpython-mpu6050
 sudo pip3 install adafruit-circuitpython-bmp280
 sudo pip3 install adafruit-circuitpython-bme280
+sudo pip3 install adafruit-circuitpython-gps
 git clone https://github.com/adafruit/Adafruit_Python_BMP.git
 cd Adafruit_Python_BMP
-sudo python3 setup.py
+sudo python3 setup.py install
 
 
 
@@ -76,3 +77,6 @@ rm /home/pi/.config/autostart/clock.desktop
 
 # windscribe
 # https://windscribe.com/guides/linux#how-to
+
+# permissions (inside IKARUS)
+sudo chmod -R a+rwx ./

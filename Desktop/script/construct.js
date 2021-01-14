@@ -141,8 +141,8 @@ class List extends React.Component {
 
 class Cam extends React.Component {
     render() {
-        if (connected){
-            return <img src={`${HTTPSERVER}/stream`}/>
+        if (server.sonde.connected){
+            return <img src={`${server.sonde.http}/stream`}/>
         }
         
         else {
@@ -183,7 +183,7 @@ var time = {
                     if (!dataset.time) {
                         return null;
                     }
-                    return (new Date()).getTime() - dataset.time * 1000 + " ms"
+                    return ((new Date()).getTime() - dataset.time * 1000).toFixed() + " ms"
                 }})
             ]
         }

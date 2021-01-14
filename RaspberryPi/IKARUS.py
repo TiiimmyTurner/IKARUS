@@ -1,19 +1,12 @@
-import sys, board, busio, time, json, math, copy, os
-from typing import Dict
-import paho.mqtt.client as mqtt
-import RPi.GPIO as GPIO
+import sys, board, busio, time, math, os
 import adafruit_mpu6050, adafruit_bme280, Adafruit_BMP.BMP085, adafruit_gps
-import paho.mqtt.publish as publish
 import serial
 from picamera import PiCamera
 from classes.lora import Transceiver
 from classes.webserver import Webserver
-import asyncio
 from threading import Thread
-from multiprocessing import Process
 from classes.data import Dataset, Value
 from classes.bot import Bot
-import discord
 import sqlite3
 
 
@@ -64,7 +57,7 @@ lora = Transceiver()
 
 webserver = Webserver()
 
-address = ('193.27.14.187', 8000)
+address = ('', 8000)
 web_thread = Thread(target=webserver.start, args=(address,))
 web_thread.start()
 
@@ -97,12 +90,6 @@ mpu6050 = adafruit_mpu6050.MPU6050(i2c)
 bmp180 = Adafruit_BMP.BMP085.BMP085() 
 # bmp180: read_temperature() and read_pressure(), rest: sensor.value
 
-
-
-# Mosquitto
-
-MQTT_SERVER = "localhost"
-MQTT_PATH = "data"
 
 
 # Discord
@@ -211,7 +198,6 @@ try:
         if time.time() - last_data >= DATA_DELAY:
             gps.update()
             data = dataset.update()
-            publish.single(MQTT_PATH, json.dumps(data), hostname=MQTT_SERVER)
             webserver.data = dataset.getString()
             last_data = time.time()
             log(data)

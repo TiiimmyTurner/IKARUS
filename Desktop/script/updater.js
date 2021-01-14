@@ -6,20 +6,9 @@ const usb = require("usb")
 
 
 setInterval(update, updateDelay);
-jQuery("body").flowtype({ fontRatio: 100, minFont: 10 })
+jQuery("body").flowtype({ fontRatio: 110, minFont: 10 })
 
 
-// port = new SerialPort();
-// port.write("some data");
-// port.on("data", (data) => {
-//     console.log(data);
-// });
-
-SerialPort.list((err, ports) => {
-    ports.forEach((port) => {
-        console.log(port.comName);
-    });
-});
 
 
 //responsive font-size
@@ -73,31 +62,53 @@ function update() {
     //adaptFont();
 
     // HTTP-Server
-    if (!connected) {
-        if (now.getTime() - lastServerCheck >= checkServerDelay) {
-            lastServerCheck = now.getTime();
+    if (now.getTime() - lastServerCheck >= checkServerDelay) {
+        lastServerCheck = now.getTime()
+        if (!server.sonde.connected) {
+            http.get(server.sonde.http, _res => {
+                server.sonde.connected = true
 
-            http.get(HTTPSERVER, res => {
-                connected = true
-
-                if (!receiving) {
-                    receiving = true
-                    http.get(`${HTTPSERVER}/data`, res => {
+                if (!server.sonde.receiving) {
+                    server.sonde.receiving = true
+                    http.get(`${server.sonde.http}/data`, res => {
 
                         res.on('data', function (buf) {
                             handle_data(buf.toString())
                         });
 
                         res.on('end', function () {
-                            receiving = false
-                            connected = false
+                            server.sonde.receiving = false
+                            server.sonde.connected = false
                             nodata = true
                         });
                     })
                 }
 
-            })
-                .on('error', e => connected = false);
+            }).on('error', e => server.sonde.connected = false)
+        }
+
+        if (!server.dongle.connected) {
+
+            // http.get(server.dongle.http, _res => {
+            //     server.dongle.connected = true
+
+            //     if (!server.dongle.receiving) {
+            //         server.dongle.receiving = true
+            //         http.get(`${server.dongle.http}/data`, res => {
+
+            //             res.on('data', function (buf) {
+            //                 handle_data(buf.toString())
+            //             });
+
+            //             res.on('end', function () {
+            //                 server.dongle.receiving = false
+            //                 server.dongle.connected = false
+            //                 nodata = true
+            //             });
+            //         })
+            //     }
+
+            // }).on('error', e => server.dongle.connected = false)
         }
     }
 
@@ -107,10 +118,10 @@ function update() {
 
         if (!marker) {
             marker = new google.maps.Marker({
-                position: formalize(latest_position.latitude, latest_position.longitude),
+                position: { lat: latest_position.latitude, lng: latest_position.longitude },
                 map: map
             });
-            map.setZoom(10)
+            map.setZoom(13)
         }
 
 

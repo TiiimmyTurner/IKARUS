@@ -1,1 +1,7 @@
-activate I2C and SPI
+-> raspi-config
+    -> Interface Options
+        activate I2C
+        activate SPI
+        activate PiCamera
+
+reboot

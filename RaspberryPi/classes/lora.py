@@ -115,7 +115,6 @@ class Transceiver(LoRa):
             return package
 
         package = decode(payload)
-        print(package)
 
         def finish(transmission):
             if None in transmission:
@@ -184,7 +183,6 @@ class Transceiver(LoRa):
 
 
     def send_payload(self, payload):
-        print(payload)
         self.write_payload(payload)
         self.set_mode(MODE.TX)
 

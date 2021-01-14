@@ -5,8 +5,22 @@ var updateDelay = 20;
 var checkServerDelay = 15000
 var recordCount = 40;
 var chunkTime = 60;
-const RASPBERRYPI = "192.168.0.115";
-const HTTPSERVER = `http://${RASPBERRYPI}:8000`
+const SONDE = "192.168.0.160";
+const DONGLE = "192.168.0.160"
+var server = {
+    dongle: {
+        ip: DONGLE,
+        http: `http://${DONGLE}:8001`,
+        connected: false,
+        receiving: false
+    },
+    sonde: {
+        ip: SONDE,
+        http: `http://${SONDE}:8000`,
+        connected: false,
+        receiving: false
+    }
+}
 
 // global variables
 const jQuery = require("jquery")
@@ -60,8 +74,7 @@ function reload(){};
 var loaded = {};
 var tables = [];
 var logblacklist = [ "rotation_z", "rotation_y", "rotation_x", "satellites", "launch" ];
-var connected = false
-var receiving = false
+
 var nodata = true
 var latest_position = null
 

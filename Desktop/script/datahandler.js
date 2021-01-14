@@ -108,7 +108,7 @@ function handle_data(string) {
         types[id] = "FLOAT"
     }
 
-    if (dataset.latitude && dataset.longitude) {
+    if (Number(dataset.latitude) && Number(dataset.longitude)) {
         latest_position = {latitude: dataset.latitude, longitude: dataset.longitude}
     }
     else {
@@ -116,13 +116,15 @@ function handle_data(string) {
             // handeled before
         }
         else {
+            
+            latest_position = null
+
             if (tables.filter(table => table.name == data.launch)[0]) {
                 db.each(`SELECT latitude, longitude, MAX(time) FROM ${data.launch}`, (_err, row) => {
-                    latest_position = {latitude: row.latitude, longitude: row.longitude}
+                    if (Number(row.latitude) && Number(row.longitude)) {
+                        latest_position = {latitude: row.latitude, longitude: row.longitude}
+                    }
                 })
-            }
-            else {
-                latest_position = null
             }
         }
     }
