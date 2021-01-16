@@ -54,6 +54,7 @@ function adaptFont() {
 }
 
 function update() {
+
     if (!(loaded.react && loaded.map && loaded.gyro && loaded.sql)) {
         return
     }
@@ -64,54 +65,64 @@ function update() {
     // HTTP-Server
     if (now.getTime() - lastServerCheck >= checkServerDelay) {
         lastServerCheck = now.getTime()
-        if (!server.sonde.connected) {
-            http.get(server.sonde.http, _res => {
-                server.sonde.connected = true
 
-                if (!server.sonde.receiving) {
-                    server.sonde.receiving = true
-                    http.get(`${server.sonde.http}/data`, res => {
+        http.get(server.sonde.http, _res => {
 
-                        res.on('data', function (buf) {
-                            handle_data(buf.toString())
-                        });
 
-                        res.on('end', function () {
-                            server.sonde.receiving = false
-                            server.sonde.connected = false
-                            nodata = true
-                        });
-                    })
-                }
+            if (!server.sonde.connected) {
+                http.get(`${server.sonde.http}/data`, res => {
 
-            }).on('error', e => server.sonde.connected = false)
-        }
+                    res.on('data', async function (buf) {
+                        await handle_data(buf.toString())
+                        server.sonde.data = true
+                    });
 
-        if (!server.dongle.connected) {
+                    res.on('end', function () {
+                        server.sonde.connected = false
+                        server.sonde.data = false
+                    });
+                })
+            }
+            server.sonde.connected = true
 
-            // http.get(server.dongle.http, _res => {
-            //     server.dongle.connected = true
 
-            //     if (!server.dongle.receiving) {
-            //         server.dongle.receiving = true
-            //         http.get(`${server.dongle.http}/data`, res => {
+        }).on('error', e => {
+            server.sonde.connected = false
+            server.sonde.data = false
+        })
 
-            //             res.on('data', function (buf) {
-            //                 handle_data(buf.toString())
-            //             });
 
-            //             res.on('end', function () {
-            //                 server.dongle.receiving = false
-            //                 server.dongle.connected = false
-            //                 nodata = true
-            //             });
-            //         })
-            //     }
 
-            // }).on('error', e => server.dongle.connected = false)
-        }
+
+        http.get(server.dongle.http, _res => {
+
+            if (!server.dongle.connected) {
+                http.get(`${server.dongle.http}/data`, res => {
+
+                    res.on('data', async function (buf) {
+                        await handle_data(buf.toString())
+                        server.dongle.data = true
+                    });
+
+                    res.on('end', function () {
+                        server.dongle.connected = false
+                        server.dongle.data = false
+                        console.log("end")
+                    });
+                })
+
+            }
+            server.dongle.connected = true
+        }).on('error', e => {
+            server.dongle.connected = false
+            server.dongle.data = false
+        })
+
+
+
     }
 
+    live = server.sonde.data || server.dongle.data
 
     // Map
     if (latest_position) {
@@ -139,7 +150,7 @@ function update() {
         }
     }
 
-    if (!nodata) {
+    if (live) {
         rotations.x = dataset.rotation_x;
         rotations.y = dataset.rotation_y;
     }

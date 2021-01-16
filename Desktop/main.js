@@ -53,8 +53,8 @@ function createWindow() {
     mainwin.started = true
   }
 
-  mainwin.start();
-  mainwin.start = () => {};
+  // mainwin.start();
+  // mainwin.start = () => {};
 
 
 }

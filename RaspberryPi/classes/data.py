@@ -54,7 +54,10 @@ class Dataset:
         string = ""
 
         for key in self.dataset:
-            string += "{0},{1},{2}\n".format(types[key], key, self.dataset[key])
+            value = self.dataset[key]
+            if type(value) == float and key not in ["latitude, longitude"]:
+                value = round(value, 3)
+            string += "{0},{1},{2}\n".format(types[key], key, value)
         return string[:-1]
         
 

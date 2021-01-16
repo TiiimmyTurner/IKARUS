@@ -2,23 +2,23 @@
 var mapUpdateDelay = 1000;
 var mapPanDelayAfterDrag = 200;
 var updateDelay = 20;
-var checkServerDelay = 15000
+var checkServerDelay = 30000
 var recordCount = 40;
 var chunkTime = 60;
 const SONDE = "192.168.0.160";
-const DONGLE = "192.168.0.160"
+const DONGLE = "192.168.0.195"
 var server = {
     dongle: {
         ip: DONGLE,
         http: `http://${DONGLE}:8001`,
         connected: false,
-        receiving: false
+        data: false
     },
     sonde: {
         ip: SONDE,
         http: `http://${SONDE}:8000`,
         connected: false,
-        receiving: false
+        data: false
     }
 }
 
@@ -75,7 +75,7 @@ var loaded = {};
 var tables = [];
 var logblacklist = [ "rotation_z", "rotation_y", "rotation_x", "satellites", "launch" ];
 
-var nodata = true
+var live = false
 var latest_position = null
 
 

@@ -1,5 +1,5 @@
 from time import sleep
-from .classes.lora import Transceiver
+from classes.lora import Transceiver
 
 lora = Transceiver()
 

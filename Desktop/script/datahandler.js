@@ -6,18 +6,14 @@ db.each("SELECT name FROM sqlite_master WHERE type='table'", (_err, row) => {
 
     tables.push({ name: row.name, columns: [] })
 
-}, () => {
-    let task = () => loaded.sql = true
-    tables.forEach(table => {
+}, async () => {
+    for (var table of tables) {
+        await new Promise(resolve => db.each(`SELECT name, type FROM PRAGMA_TABLE_INFO('${table.name}')`, (err, column) => {
+            table.columns.push({ name: column.name, type: column.type })
+        }, resolve))
+    }
 
-        let then = task
-        task = () => db.each(`SELECT name, type FROM PRAGMA_TABLE_INFO('${table.name}')`, (err, column) => {
-            table.columns.push(column)
-        }, then)
-
-    })
-    task()
-
+    loaded.sql = true
 })
 
 
@@ -57,8 +53,8 @@ function calculation(temperature, pressure) {
 
 }
 
-function handle_data(string) {
-    // var data = JSON.parse(data);
+async function handle_data(string) {
+
     var data = {}
     var types = {}
     var chunks = string.split("\n")
@@ -88,91 +84,119 @@ function handle_data(string) {
                 case "BOOLEAN":
                     value = value == "True"
                     break
-                
+
                 default:
                     // stays string
                     break
-            }            
+            }
         }
 
 
-        
+
         data[id] = value
         types[id] = type
 
     })
-
-    var calc = calculation(data.temperature_outside, data.pressure_outside);
-    for (id in calc) {
-        data[id] = +calc[id].toFixed(4);
-        types[id] = "FLOAT"
+    if(Number(data.temperature_outside) && Number(data.pressure_outside)) {
+        var calc = calculation(data.temperature_outside, data.pressure_outside);
+        for (id in calc) {
+            data[id] = +calc[id].toFixed(4);
+            types[id] = "FLOAT"
+        }        
     }
 
+
     if (Number(dataset.latitude) && Number(dataset.longitude)) {
-        latest_position = {latitude: dataset.latitude, longitude: dataset.longitude}
+        latest_position = { latitude: dataset.latitude, longitude: dataset.longitude }
     }
     else {
         if (data.launch == dataset.launch) {
             // handeled before
         }
         else {
-            
+
             latest_position = null
 
             if (tables.filter(table => table.name == data.launch)[0]) {
-                db.each(`SELECT latitude, longitude, MAX(time) FROM ${data.launch}`, (_err, row) => {
-                    if (Number(row.latitude) && Number(row.longitude)) {
-                        latest_position = {latitude: row.latitude, longitude: row.longitude}
+                async function call() {
+                    let positions = []
+                    await new Promise(resolve => {
+                        db.each(`SELECT latitude, longitude, time FROM ${data.launch}`, (_err, row) => {
+                            if (Number(row.latitude) && Number(row.longitude)) {
+                                positions.push(row)
+                            }
+                        }, resolve)
+                    })
+
+                    if (positions.length > 0) {
+
+                        latest = positions.reduce((previous, current) => {
+                            if (current.time > previous.time) {
+                                return current
+                            }
+                            else {
+                                return previous
+                            }
+                        }, positions[0])
+
+                        latest_position = { latitude: latest.latitude, longitude: latest.longitude }                        
                     }
-                })
+
+                }
+
+                call()
+
             }
         }
     }
 
-    dataset = data
-    nodata = false
+
 
 
 
     // SQL logging
     new Promise(resolve => {
         var table;
-        if (table = tables.filter(table => table.name == dataset.launch)[0]) {
+        if (table = tables.filter(table => table.name == data.launch)[0]) {
             resolve(table)
         }
         else {
-            createTable(dataset.launch, types).then(resolve)
+            createTable(data.launch, types).then(resolve)
         }
 
     }).then((table) => {
 
         let columns = table.columns
         let columnNames = columns.map(column => column.name)
-        var common = Object.keys(dataset).filter(id => columnNames.includes(id))
+        var common = Object.keys(data).filter(id => columnNames.includes(id))
 
 
         var into = [], values = [];
 
         common.forEach(id => {
 
-            if (dataset[id] || dataset[id] == 0) {
+            if (data[id] || data[id] == 0) {
 
                 into.push(id.toString());
 
                 if (columns.filter(column => column.name == id)[0].type == "TEXT") {
-                    values.push('"' + dataset[id] + '"');
+                    values.push('"' + data[id] + '"');
                 }
                 else {
-                    values.push(dataset[id])
+                    values.push(data[id])
                 }
 
             }
 
         })
 
-        db.run(`INSERT INTO ${dataset.launch} (${into.toString()}) VALUES (${values.toString()})`, err => err ? console.log(err) : {});
+        db.run(`INSERT INTO ${data.launch} (${into.toString()}) VALUES (${values.toString()})`, err => err ? console.log(err) : {});
 
     });
+    
+    if( !dataset.time || data.time > dataset.time){
+        Object.assign(dataset, data)
+    }
 
 
 

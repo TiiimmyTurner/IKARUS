@@ -1,10 +1,13 @@
-import discord, asyncio
+import discord, asyncio, http.client, time
 class Bot:
     def __init__(self):
         self.client = discord.Client()
         self.loop = asyncio.get_event_loop()
         self.sending = False
         self.pause = False
+        self.ready = False
+        self.last_internet_check = 0
+        self.internet = False
 
         @self.client.event
         async def on_ready():
@@ -33,10 +36,26 @@ class Bot:
     def set_channel(self, id):
         self.channelID = id
 
+    def checkInternet(self):
+        if time.time() - self.last_internet_check > 60:
+            self.last_internet_check = time.time()
+            conn = http.client.HTTPConnection("www.google.com", timeout=5)
+            try:
+                conn.request("HEAD", "/")
+                conn.close()
+                return True
+            except:
+                conn.close()
+                return False
+        else: 
+            return self.internet
+
     def send(self, message):
         if self.channel and not self.pause:
             self.sending = True
             async def task():
+                self.internet = self.checkInternet()
+                if not self.internet: return
                 await self.channel.send(message)
                 self.sending = False
             asyncio.run_coroutine_threadsafe(task(), self.loop)

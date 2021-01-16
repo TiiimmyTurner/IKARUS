@@ -4,6 +4,9 @@ import ReactDOM from 'react-dom';
 
 function flip(ids) {
     return () => {
+        if (!dataset.launch) {
+            return
+        }
         document.getElementById("frontside").setAttribute("style", "transform: rotateY(180deg);");
         document.getElementById("backside").setAttribute("style", "transform: rotateY(360deg); height: 100%; width: 100%;");
     
@@ -51,7 +54,7 @@ function getValue(options={ id, unit, description, decimals, factor, get }) {
                     return "";   
                 }
             }
-            if (!global.dataset[options.id] || global.nodata) {
+            if (!global.dataset[options.id] || !global.live) {
                 return ""
             }
             return (global.dataset[options.id] * options.factor).toFixed(options.decimals) + (options.unit ? " " + options.unit : "")
@@ -165,7 +168,7 @@ var time = {
                     return time.toISOString().substr(11, 8) 
                 }}),
                 getValue({ id: "board_time", description: "Board:", get: () => {
-                    if (!dataset.time || nodata) {
+                    if (!dataset.time || !live) {
                         return null
                     }
                     var time = new Date();
@@ -304,51 +307,17 @@ var links = [
     "https://bit.ly/3jKODJA"
 ];
 
-(function loadScript(i){
-    return () => {
-        if (!links[i]){
-            loaded.react = true;
-        }
-        else {
-            var script = document.createElement("script");
-            script.src = links[i];
-            document.head.appendChild(script);
-            script.onload = loadScript(i + 1);            
-        }
 
+async function call() {
+    for (var link of links) {
+        var script = document.createElement("script")
+        script.src = link
+        document.head.appendChild(script)
+        await new Promise(resolve => script.onload = resolve)
     }
+    loaded.react = true
+}
 
-
-
-})(0)();
-loaded.react = true
-
-// var loadScripts = () => Promise.resolve()
-
-
-// links.reduce((previous, link, index) => {
-//     let next = () => new Promise((resolve, reject) => {
-//         var script = document.createElement("script");
-//         script.src = link;
-//         document.head.appendChild(script);
-//         script.onload = resolve;
-//         script.onerror = reject
-//     })
-//     let old = previous
-//     previous = old.then(next)
-//     if (index == links.length - 1) {
-//         var load = loadScripts
-//         loadScripts = () => new Promise( resolve => {
-//             next = () => next().then(resolve)
-//             load()
-//         })
-//     }
-//     return next
-// }, loadScripts)
-
-// loadScripts().then(() => {
-//     loaded.react = true;
-// })
-
+call()
 
 

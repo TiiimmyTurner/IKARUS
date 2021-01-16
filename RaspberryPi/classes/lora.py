@@ -8,7 +8,7 @@ from SX127x.board_config import BOARD
 
 # --- constants ---
 
-MAX_BYTES = 15
+MAX_BYTES = 123
 SEPERATOR = 128
 
 # callback request message key
@@ -92,8 +92,8 @@ class Transceiver(LoRa):
         BOARD.led_on()
 
         payload = self.read_payload(nocheck=True)
+        print(len(payload))
         payload = payload[4:-1] # to discard [255, 255, 0, 0] at the start and [0] at the end
-
         def decode(payload):
             package = {}
             args = ["txn", "quantity", "number", "length", "message"]

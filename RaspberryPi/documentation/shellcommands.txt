@@ -38,7 +38,7 @@ sudo git clone https://github.com/rpsreal/pySX127x
 
 
 
-# cv2
+# cv2 # nicht mehr benötigt
 sudo pip3 install opencv-python
 sudo apt-get install libcblas-dev libhdf5-dev libhdf5-serial-dev libatlas-base-dev libjasper-dev libqtgui4 libqt4-test
 sudo apt-get install libatlas-base-dev
@@ -46,7 +46,9 @@ sudo apt-get install libatlas-base-dev
 
 
 # discord
-python3 -m pip install -U discord.py
+python3 -m pip install discord.py
+sudo pip3 install discord.py
+pip3 install discord.py
 
 
 
@@ -66,7 +68,42 @@ nano /home/pi/.config/autostart/IKARUS.desktop
 [Desktop Entry]
 Type=Application
 Name=IKARUS
-Exec=/usr/bin/python3 /path/to/IKARUS.py
+Exec=/usr/bin/python3 /home/pi/Documents/IKARUS/IKARUS.py
+
+# --- Für Autostart einfach systemd benutzen
+sudo nano /lib/systemd/system/ikarus.service
+
+SONDE:
+    [Unit]
+    Description=IKARUS.py
+    After=multi-user.target
+
+    [Service]
+    Type=idle
+    ExecStart=/usr/bin/python3 /home/pi/Documents/IKARUS/IKARUS.py
+    Restart=always
+    RestartSec=3
+
+    [Install]
+    WantedBy=multi-user.target
+
+DONGLE:
+    [Unit]
+    Description=DONGLE.py
+    After=multi-user.target
+
+    [Service]
+    Type=idle
+    ExecStart=/usr/bin/python3 /home/pi/Documents/IKARUS/DONGLE.py
+    Restart=always
+    RestartSec=3
+
+    [Install]
+    WantedBy=multi-user.target
+
+sudo chmod 644 /lib/systemd/system/ikarus.service
+sudo systemctl daemon-reload
+sudo systemctl enable ikarus.service
 
 # seek'n'kill
 sudo ps -ax | grep python
