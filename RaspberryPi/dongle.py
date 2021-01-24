@@ -37,7 +37,7 @@ def send(message):
         
         if line[1] == "longitude":
             longitude = line[2]
-    bot.send("latitude: {0}, longitude: {1}".format(latitude, longitude))
+    bot.send("[LORA] latitude: {0}, longitude: {1}".format(latitude, longitude))
     print(message)
 
 lora.onmessage = send

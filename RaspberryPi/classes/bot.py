@@ -37,7 +37,7 @@ class Bot:
         self.channelID = id
 
     def checkInternet(self):
-        if time.time() - self.last_internet_check > 60:
+        if time.time() - self.last_internet_check > 0:
             self.last_internet_check = time.time()
             conn = http.client.HTTPConnection("www.google.com", timeout=5)
             try:

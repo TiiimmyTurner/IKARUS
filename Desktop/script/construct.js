@@ -186,7 +186,7 @@ var time = {
                     if (!dataset.time) {
                         return null;
                     }
-                    return ((new Date()).getTime() - dataset.time * 1000).toFixed() + " ms"
+                    return Math.abs((new Date()).getTime()/1000 - dataset.time).toFixed() + " s"
                 }})
             ]
         }

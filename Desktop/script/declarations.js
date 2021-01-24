@@ -6,7 +6,7 @@ var checkServerDelay = 30000
 var recordCount = 40;
 var chunkTime = 60;
 const SONDE = "192.168.0.160";
-const DONGLE = "192.168.0.195"
+const DONGLE = "192.168.0.115"
 var server = {
     dongle: {
         ip: DONGLE,
@@ -76,6 +76,6 @@ var tables = [];
 var logblacklist = [ "rotation_z", "rotation_y", "rotation_x", "satellites", "launch" ];
 
 var live = false
-var latest_position = null
+var latest_position = {latitude: 48.08714377757492, longitude: 11.836280842094933}
 
 

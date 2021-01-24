@@ -92,7 +92,7 @@ class Transceiver(LoRa):
         BOARD.led_on()
 
         payload = self.read_payload(nocheck=True)
-        print(len(payload))
+        print("received", len(payload), "bytes")
         payload = payload[4:-1] # to discard [255, 255, 0, 0] at the start and [0] at the end
         def decode(payload):
             package = {}
@@ -161,6 +161,7 @@ class Transceiver(LoRa):
         print("lost:", self.rxn)
 
     def on_tx_done(self):
+        print("txdone")
         self.clear_irq_flags(TxDone=1) # clear txdone IRQ flag
         if len(self.transmitting) == 0:
             self.setmode("RX")
@@ -172,7 +173,7 @@ class Transceiver(LoRa):
     def setmode(self, m):
         if m == "RX":
             self.state = "RX"
-            self.set_dio_mapping([0] * 6)    
+            self.set_dio_mapping([0] * 6)
             self.reset_ptr_rx()
             self.set_mode(MODE.RXCONT)
 
